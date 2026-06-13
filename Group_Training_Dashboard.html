@@ -1,0 +1,739 @@
+<div id="root"></div>
+<style>
+  :root{
+    --forest:#1F3D2E;
+    --forest-dark:#16291E;
+    --gold:#C9A24B;
+    --cream:#F8F5EE;
+    --line:#DAD3C2;
+    --grey:#5B5B5B;
+    --good:#2F6B4F;
+    --mid:#C9A24B;
+    --low:#B5562B;
+  }
+  *{box-sizing:border-box;}
+  body, #root{
+    font-family:Arial, Helvetica, sans-serif;
+    color:#262626;
+    background:var(--cream);
+    margin:0;
+    padding:0;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 24px 60px;}
+
+  /* ---- header / controls ---- */
+  .topbar{
+    background:var(--forest);
+    color:#fff;
+    padding:18px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .brand{font-size:13px;letter-spacing:3px;font-weight:700;color:var(--gold);}
+  .title{font-size:22px;font-weight:700;margin:2px 0 0;}
+
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .controls select, .controls input{
+    padding:8px 10px;border-radius:4px;border:1px solid var(--line);font-size:13px;background:#fff;
+  }
+  .controls select{max-width:220px;}
+  .controls input{width:240px;}
+  .controls button{
+    background:var(--gold);color:var(--forest-dark);border:none;font-weight:700;
+    padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;
+  }
+  .controls button:hover{filter:brightness(1.05);}
+  .controls .ghost{
+    background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);font-weight:700;
+    padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;
+  }
+  .controls .ghost.active{background:var(--gold);color:var(--forest-dark);border-color:var(--gold);}
+
+  .meta{margin-top:18px;color:var(--grey);font-size:14px;font-style:italic;}
+
+  /* ---- KPI cards ---- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 30px;}
+  .kpi{background:#fff;border:1px solid var(--line);border-top:4px solid var(--forest);border-radius:4px;padding:18px 10px;text-align:center;}
+  .kpi.gold{border-top-color:var(--gold);}
+  .kpi .val{font-size:32px;font-weight:800;color:var(--forest);}
+  .kpi.gold .val{color:var(--gold);}
+  .kpi .lab{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--grey);margin-top:6px;}
+
+  /* ---- section header ---- */
+  .section h2{
+    font-size:16px;letter-spacing:1px;color:var(--forest);background:#fff;
+    border-left:4px solid var(--gold);padding:10px 14px;margin:0 0 14px;
+  }
+  .section{margin-bottom:34px;}
+
+  /* ---- score table (per-report + group avg) ---- */
+  .scorebox{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .scorerow{display:grid;grid-template-columns:1fr 320px 60px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line);gap:12px;}
+  .scorerow:last-child{border-bottom:none;}
+  .scorerow:nth-child(even){background:var(--cream);}
+  .scorerow .qlabel{font-size:14px;}
+  .bartrack{background:#ECE8DD;border-radius:3px;height:14px;overflow:hidden;}
+  .barfill{height:100%;border-radius:3px;}
+  .scorerow .pct{text-align:right;font-weight:800;font-size:14px;}
+
+  .legend{display:flex;gap:24px;padding:12px 14px;font-size:13px;color:var(--grey);flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-weight:700;}
+  .swatch{width:12px;height:12px;border-radius:2px;display:inline-block;}
+
+  .insight{background:#fff;border:1px solid var(--line);border-left:4px solid var(--forest);border-radius:4px;padding:14px 16px;margin-top:14px;font-size:14px;color:#333;}
+  .insight b{color:var(--forest);}
+
+  /* ---- department / qual cards ---- */
+  .deptgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .deptcard{background:#fff;border:1px solid var(--line);border-radius:4px;padding:14px 16px;border-top:4px solid var(--forest);}
+  .deptcard h3{margin:0 0 6px;font-size:14px;letter-spacing:1px;color:var(--forest);}
+  .deptcard .contacts{font-size:13px;font-style:italic;color:var(--grey);margin-bottom:4px;}
+  .status{display:inline-block;font-size:12px;font-weight:800;padding:2px 10px;border-radius:12px;margin-bottom:8px;}
+  .status.good{background:#DCEEE3;color:var(--good);}
+  .status.mid{background:#FBF1DC;color:var(--mid);}
+  .status.low{background:#FBE5DC;color:var(--low);}
+  .deptcard p{font-size:13px;color:#333;margin:0;line-height:1.5;}
+
+  .topicbox{background:#fff;border:1px solid var(--line);border-radius:4px;padding:6px 16px;}
+  .topicitem{padding:8px 0;font-size:14px;border-bottom:1px solid var(--line);}
+  .topicitem:last-child{border-bottom:none;}
+
+  .qualgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .qualcard{background:#fff;border:1px solid var(--line);border-radius:4px;padding:14px 16px;border-top:4px solid var(--gold);}
+  .qualcard h3{margin:0 0 8px;font-size:14px;letter-spacing:.5px;color:var(--forest);}
+  .qualcard ul{margin:0;padding-left:18px;font-size:13px;color:#333;line-height:1.6;}
+  .qualcard li{margin-bottom:4px;}
+
+  /* ---- individual hours table ---- */
+  .hourstable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:13px;}
+  .hourstable th{background:var(--forest);color:#fff;text-align:left;padding:8px 12px;font-weight:700;font-size:12px;letter-spacing:.5px;}
+  .hourstable td{padding:7px 12px;border-bottom:1px solid var(--line);}
+  .hourstable tr:nth-child(even) td{background:var(--cream);}
+  .hourstable tr:last-child td{border-bottom:none;}
+  .hourstable td.num{text-align:right;font-weight:700;color:var(--forest);}
+  .hourstable tr.total td{font-weight:800;color:var(--forest);border-top:2px solid var(--gold);background:#fff;}
+  .hourstable tr.total td.num{color:var(--gold);}
+
+  /* ---- group overview table ---- */
+  .reporttable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:13px;}
+  .reporttable th{background:var(--forest);color:#fff;text-align:left;padding:8px 10px;font-weight:700;}
+  .reporttable td{padding:8px 10px;border-bottom:1px solid var(--line);}
+  .reporttable tr:last-child td{border-bottom:none;}
+  .reporttable tr:nth-child(even) td{background:var(--cream);}
+  .reporttable .lnk{color:var(--forest);font-weight:700;text-decoration:none;cursor:pointer;}
+  .reporttable .lnk:hover{text-decoration:underline;}
+
+  /* ---- property coverage list ---- */
+  .covgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .covitem{background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+  .covitem .n{font-weight:800;color:var(--forest);}
+  .covitem.none .n{color:var(--low);}
+
+  .placeholder, .err{background:#fff;border:1px dashed var(--line);border-radius:4px;padding:40px 20px;text-align:center;color:var(--grey);font-size:14px;}
+  .err{border-color:var(--low);color:var(--low);}
+
+  /* ---- add report panel ---- */
+  .addpanel{
+    background:#fff;border:1px solid var(--line);border-left:4px solid var(--forest);
+    border-radius:4px;padding:14px 16px;margin-bottom:24px;
+  }
+  .addpanel h2{font-size:14px;color:var(--forest);margin:0 0 10px;letter-spacing:1px;}
+  .addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .addrow select, .addrow input{
+    padding:8px 10px;border-radius:4px;border:1px solid var(--line);font-size:13px;
+  }
+  .addrow input[type="text"]{flex:1;min-width:200px;}
+  .addrow input.urlfield{flex:2;min-width:260px;}
+  .addrow button{
+    background:var(--forest);color:#fff;border:none;font-weight:700;
+    padding:9px 18px;border-radius:4px;cursor:pointer;font-size:13px;
+  }
+  .addrow button:hover{filter:brightness(1.15);}
+  .addmsg{font-size:12px;color:var(--grey);margin-top:8px;}
+  .addmsg.ok{color:var(--good);font-weight:700;}
+  .addmsg.bad{color:var(--low);font-weight:700;}
+  .delbtn{
+    border:none;background:none;color:var(--low);cursor:pointer;font-size:13px;
+    font-weight:700;margin-left:8px;
+  }
+  .delbtn:hover{text-decoration:underline;}
+
+  @media (max-width:640px){
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .deptgrid, .qualgrid, .covgrid{grid-template-columns:1fr;}
+    .scorerow{grid-template-columns:1fr;gap:4px;}
+    .scorerow .pct{text-align:left;}
+  }
+</style>
+<script>
+(function(){
+
+  // ======================================================================
+  // CONFIG
+  // ======================================================================
+  // For each property, add one entry per training report:
+  //   { label: "Luxury Guest Service \u2014 April 2026", url: "<published CSV link to that report's Data Entry tab>" }
+  // The "Group Overview" automatically includes every report listed below
+  // across every property.
+  var PROPERTIES = {
+    "Arusha Coffee Lodge": [],
+    "Tarangire Treetops": [],
+    "The Manor": [],
+    "Serengeti Pioneer Camp": [],
+    "Serengeti Migration Camp": [],
+    "Serengeti Explorer": [],
+    "Kilindi Zanzibar": [],
+    "Tortilis Camp Amboseli": [
+      // { label: "Luxury Guest Service \u2014 April 2026", url: "PASTE_PUBLISHED_CSV_LINK_HERE" }
+    ],
+    "Sand River Masai Mara": [],
+    "Elephant Pepper Camp": [],
+    "Little Elephant Pepper Camp": [],
+    "Loisaba Tented Camp": [],
+    "Loisaba Star Beds": [],
+    "Loisaba Lodo Springs": [],
+    "Lewa Safari Camp": [],
+    "Kifaru House Lewa": [],
+    "Elsa's Kopje": [],
+    "Ngorongoro Explorer": []
+  };
+
+  // Row indices (0-based) matching the "Data Entry" tab layout of the
+  // Training Report template spreadsheet.
+  var ROW = {
+    property: 4, programme: 5, monthYear: 6, trainer: 7, venue: 8, reportDate: 9,
+    participants: 12, trainingDays: 13, deptsCovered: 14, overallSat: 17,
+    sessionHours: 16,
+    qStart: 21, qEnd: 33,
+    deptStart: 37, deptEnd: 40,
+    topicStart: 47, topicEnd: 51,
+    qualStart: 56, qualEnd: 59,
+    indivStart: 64, indivEnd: 72, indivTotal: 73
+  };
+
+  // ---------- persistence (browser local storage) ----------
+  var STORAGE_KEY = 'elewanaTrainingDashboard_v1';
+
+  function loadStoredReports(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      var stored = JSON.parse(raw);
+      Object.keys(stored).forEach(function(prop){
+        if (!PROPERTIES[prop]) PROPERTIES[prop] = [];
+        // merge, avoiding exact duplicates (same url)
+        stored[prop].forEach(function(rep){
+          var exists = PROPERTIES[prop].some(function(r){ return r.url === rep.url; });
+          if (!exists) PROPERTIES[prop].push(rep);
+        });
+      });
+    } catch(e){ /* ignore */ }
+  }
+
+  function persistReports(){
+    try {
+      // Only persist entries that aren't already baked into the hardcoded defaults
+      var toSave = {};
+      Object.keys(PROPERTIES).forEach(function(prop){
+        toSave[prop] = PROPERTIES[prop];
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch(e){ /* ignore */ }
+  }
+
+  loadStoredReports();
+  var root = document.getElementById('root');
+  var GOOD = '#2F6B4F', MID = '#C9A24B', LOW = '#B5562B';
+  var STATE = { property:'', reportIdx:'', mode:'report' }; // mode: 'report' | 'group'
+  var CACHE = {}; // url -> parsed rows
+
+  // ---------- helpers ----------
+  function tierColor(score){
+    if (score >= 0.97) return GOOD;
+    if (score >= 0.92) return MID;
+    return LOW;
+  }
+  function statusClass(status){
+    var s = (status||'').toLowerCase();
+    if (s.indexOf('attention') > -1 || s.indexOf('risk') > -1) return 'low';
+    if (s.indexOf('follow') > -1 || s.indexOf('plan') > -1) return 'mid';
+    return 'good';
+  }
+  function pct(n){ return Math.round(n*100) + '%'; }
+  function esc(s){ return (s==null?'':String(s)); }
+
+  function parseCSV(text){
+    var rows = [], row = [], field = '', inQuotes = false;
+    for (var i = 0; i < text.length; i++){
+      var ch = text[i];
+      if (inQuotes){
+        if (ch === '"'){ if (text[i+1] === '"'){ field += '"'; i++; } else inQuotes = false; }
+        else field += ch;
+      } else {
+        if (ch === '"') inQuotes = true;
+        else if (ch === ','){ row.push(field); field=''; }
+        else if (ch === '\n'){ row.push(field); field=''; rows.push(row); row=[]; }
+        else if (ch === '\r'){ /* skip */ }
+        else field += ch;
+      }
+    }
+    if (field.length || row.length){ row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function fetchCSV(url){
+    if (CACHE[url]) return Promise.resolve(CACHE[url]);
+    return fetch(url).then(function(res){
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      return res.text();
+    }).then(function(text){
+      var data = parseCSV(text);
+      CACHE[url] = data;
+      return data;
+    });
+  }
+
+  function g(rows, r, c){ return rows[r] && rows[r][c] !== undefined ? rows[r][c] : ''; }
+
+  function extractReport(rows){
+    var rep = {};
+    rep.property = g(rows, ROW.property, 1);
+    rep.programme = g(rows, ROW.programme, 1);
+    rep.monthYear = g(rows, ROW.monthYear, 1);
+    rep.reportDate = g(rows, ROW.reportDate, 1);
+    rep.participants = g(rows, ROW.participants, 1) || '0';
+    rep.trainingDays = parseFloat(g(rows, ROW.trainingDays, 1)) || 0;
+    rep.deptsCovered = parseFloat(g(rows, ROW.deptsCovered, 1)) || 0;
+    rep.overallSat = parseFloat(g(rows, ROW.overallSat, 1)) || 0;
+
+    rep.questions = [];
+    for (var r = ROW.qStart; r <= ROW.qEnd; r++){
+      var qnum = g(rows,r,0), qlabel = g(rows,r,1), score = parseFloat(g(rows,r,2));
+      if (!qnum) continue;
+      rep.questions.push({qnum:qnum, label:qlabel, score:isNaN(score)?0:score});
+    }
+
+    rep.depts = [];
+    for (var r = ROW.deptStart; r <= ROW.deptEnd; r++){
+      var name = g(rows,r,0), contacts = g(rows,r,1), status = g(rows,r,3), notes = g(rows,r,5);
+      if (!name) continue;
+      rep.depts.push({name:name, contacts:contacts, status:status, notes:notes});
+    }
+
+    rep.topics = [];
+    for (var r = ROW.topicStart; r <= ROW.topicEnd; r++){
+      var t = g(rows,r,0);
+      if (t) rep.topics.push(t);
+    }
+
+    rep.quals = [];
+    for (var r = ROW.qualStart; r <= ROW.qualEnd; r++){
+      var qt = g(rows,r,0), summary = g(rows,r,2);
+      if (!qt) continue;
+      rep.quals.push({title:qt, points:(summary||'').split('\n').filter(Boolean)});
+    }
+
+    rep.sessionHours = parseFloat(g(rows, ROW.sessionHours, 1)) || 0;
+    rep.hours = [];
+    for (var r = ROW.indivStart; r <= ROW.indivEnd; r++){
+      var name = g(rows,r,0), dept = g(rows,r,2), hrs = parseFloat(g(rows,r,4));
+      if (!name) continue;
+      rep.hours.push({name:name, dept:dept, hours:isNaN(hrs)?0:hrs});
+    }
+    rep.totalIndivHours = parseFloat(g(rows, ROW.indivTotal, 4)) || 0;
+    return rep;
+  }
+
+  // ---------- list of all configured reports (flat) ----------
+  function allReports(){
+    var list = [];
+    Object.keys(PROPERTIES).forEach(function(prop){
+      PROPERTIES[prop].forEach(function(r, i){
+        list.push({property:prop, label:r.label, url:r.url, idx:i});
+      });
+    });
+    return list;
+  }
+
+  // ======================================================================
+  // TOP BAR
+  // ======================================================================
+  function topBar(){
+    var propOptions = '<option value="">Select property\u2026</option>';
+    Object.keys(PROPERTIES).forEach(function(p){
+      var sel = (p === STATE.property) ? ' selected' : '';
+      propOptions += '<option value="'+esc(p)+'"'+sel+'>'+esc(p)+'</option>';
+    });
+
+    var reportOptions = '<option value="">Select report\u2026</option>';
+    if (STATE.property && PROPERTIES[STATE.property]){
+      PROPERTIES[STATE.property].forEach(function(r, i){
+        var sel = (String(i) === String(STATE.reportIdx)) ? ' selected' : '';
+        reportOptions += '<option value="'+i+'"'+sel+'>'+esc(r.label)+'</option>';
+      });
+    }
+
+    return '<div class="topbar">'+
+      '<div><div class="brand">ELEWANA COLLECTION \u00b7 LEARNING & DEVELOPMENT</div>'+
+        '<div class="title" id="dashTitle">'+(STATE.mode==='group' ? 'Group Training Dashboard' : 'Training Report Dashboard')+'</div></div>'+
+      '<div class="controls">'+
+        '<select id="propSelect">'+propOptions+'</select>'+
+        '<select id="reportSelect">'+reportOptions+'</select>'+
+        '<button id="loadBtn" type="button">Load</button>'+
+        '<button id="groupBtn" class="ghost'+(STATE.mode==='group'?' active':'')+'" type="button">Group Overview</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function wireTopBar(){
+    var propSel = document.getElementById('propSelect');
+    var repSel = document.getElementById('reportSelect');
+    var loadBtn = document.getElementById('loadBtn');
+    var groupBtn = document.getElementById('groupBtn');
+
+    propSel.addEventListener('change', function(){
+      STATE.property = propSel.value;
+      STATE.reportIdx = '';
+      STATE.mode = 'report';
+      root.innerHTML = topBar() + '<div class="wrap"><div class="placeholder">Choose a report for '+esc(STATE.property)+', then click Load.</div></div>';
+      wireTopBar();
+    });
+
+    loadBtn.addEventListener('click', function(){
+      var idx = repSel.value;
+      if (STATE.property === '' || idx === ''){
+        root.innerHTML = topBar() + '<div class="wrap"><div class="err">Choose a property and a report first.</div></div>';
+        wireTopBar();
+        return;
+      }
+      STATE.reportIdx = idx;
+      STATE.mode = 'report';
+      var rep = PROPERTIES[STATE.property][idx];
+      loadSingle(rep.url);
+    });
+
+    groupBtn.addEventListener('click', function(){
+      STATE.mode = 'group';
+      loadGroup();
+    });
+  }
+
+  function addPanel(){
+    var propOptions = '';
+    Object.keys(PROPERTIES).sort().forEach(function(p){
+      propOptions += '<option value="'+esc(p)+'">'+esc(p)+'</option>';
+    });
+    return '<div class="addpanel">'+
+      '<h2>ADD A NEW REPORT</h2>'+
+      '<div class="addrow">'+
+        '<select id="addProp">'+propOptions+'</select>'+
+        '<input id="addLabel" type="text" placeholder="Report title, e.g. Luxury Guest Service \u2014 May 2026" />'+
+        '<input id="addUrl" type="text" class="urlfield" placeholder="Paste published CSV link here" />'+
+        '<button id="addBtn" type="button">Add & Sync</button>'+
+      '</div>'+
+      '<div class="addmsg" id="addMsg">Publish the report\u2019s \u201cData Entry\u201d tab to the web as CSV, then paste the link above. Saved reports are remembered on this device/browser.</div>'+
+    '</div>';
+  }
+
+  function wireAddPanel(){
+    var btn = document.getElementById('addBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      var prop = document.getElementById('addProp').value;
+      var label = document.getElementById('addLabel').value.trim();
+      var url = document.getElementById('addUrl').value.trim();
+      var msg = document.getElementById('addMsg');
+      if (!url || !label){
+        msg.textContent = 'Please enter both a report title and the CSV link.';
+        msg.className = 'addmsg bad';
+        return;
+      }
+      if (!PROPERTIES[prop]) PROPERTIES[prop] = [];
+      PROPERTIES[prop].push({label:label, url:url});
+      persistReports();
+      msg.textContent = 'Added \u2014 verifying link\u2026';
+      msg.className = 'addmsg';
+      fetchCSV(url).then(function(){
+        STATE.property = prop;
+        STATE.reportIdx = String(PROPERTIES[prop].length - 1);
+        STATE.mode = 'report';
+        loadSingle(url);
+      }).catch(function(){
+        msg.textContent = 'Saved, but the link could not be loaded yet \u2014 double-check it is published as CSV.';
+        msg.className = 'addmsg bad';
+      });
+    });
+  }
+  function showPlaceholder(msg, isError){
+    root.innerHTML = topBar() + '<div class="wrap">' + addPanel() + '<div class="'+(isError?'err':'placeholder')+'">'+msg+'</div></div>';
+    wireTopBar();
+    wireAddPanel();
+  }
+
+  // ======================================================================
+  // SINGLE REPORT VIEW
+  // ======================================================================
+  function loadSingle(url){
+    showPlaceholder('Loading report\u2026');
+    fetchCSV(url).then(function(rows){
+      renderSingle(extractReport(rows));
+    }).catch(function(){
+      showPlaceholder('Could not load this report. Make sure its "Data Entry" tab is published to the web as CSV and the link is correct.', true);
+    });
+  }
+
+  function renderSingle(rep){
+    var html = '';
+    html += '<div class="meta">'+esc(rep.programme)+' &nbsp;|&nbsp; '+esc(rep.monthYear)+' &nbsp;|&nbsp; Report date: '+esc(rep.reportDate)+'</div>';
+
+    html += '<div class="kpis">'+
+      '<div class="kpi"><div class="val">'+pct(rep.overallSat)+'</div><div class="lab">OVERALL SATISFACTION</div></div>'+
+      '<div class="kpi"><div class="val">'+esc(rep.participants)+'</div><div class="lab">PARTICIPANTS</div></div>'+
+      '<div class="kpi"><div class="val">'+rep.trainingDays+'</div><div class="lab">TRAINING DAYS</div></div>'+
+      '<div class="kpi gold"><div class="val">'+rep.deptsCovered+'</div><div class="lab">DEPARTMENTS COVERED</div></div>'+
+    '</div>';
+
+    html += '<div class="kpis" style="grid-template-columns:1fr 1fr;">'+
+      '<div class="kpi"><div class="val">'+rep.sessionHours.toFixed(1)+' hrs</div><div class="lab">TRAINING HOURS DELIVERED (SESSION)</div></div>'+
+      '<div class="kpi gold"><div class="val">'+rep.totalIndivHours.toFixed(1)+' hrs</div><div class="lab">TOTAL INDIVIDUAL HOURS LOGGED</div></div>'+
+    '</div>';
+
+    var qSorted = rep.questions.slice().sort(function(a,b){ return b.score - a.score; });
+    html += '<div class="section"><h2>SATISFACTION BY EVALUATION QUESTION</h2><div class="scorebox">';
+    qSorted.forEach(function(q){
+      var color = tierColor(q.score);
+      html += '<div class="scorerow">'+
+        '<div class="qlabel">'+esc(q.qnum)+' \u2014 '+esc(q.label)+'</div>'+
+        '<div class="bartrack"><div class="barfill" style="width:'+(q.score*100)+'%;background:'+color+'"></div></div>'+
+        '<div class="pct" style="color:'+color+'">'+pct(q.score)+'</div>'+
+      '</div>';
+    });
+    html += '</div>';
+    html += '<div class="legend">'+
+      '<span><span class="swatch" style="background:'+GOOD+'"></span>Excellent (97%+)</span>'+
+      '<span><span class="swatch" style="background:'+MID+'"></span>Strong (92\u201396%)</span>'+
+      '<span><span class="swatch" style="background:'+LOW+'"></span>Needs attention (&lt;92%)</span>'+
+    '</div>';
+    if (qSorted.length){
+      var hi = qSorted[0], lo = qSorted[qSorted.length-1];
+      html += '<div class="insight"><b>Insight:</b> Highest-rated area was <b>'+esc(hi.label)+'</b> ('+pct(hi.score)+'). '+
+        'The area to watch is <b>'+esc(lo.label)+'</b> ('+pct(lo.score)+').</div>';
+    }
+    html += '</div>';
+
+    html += '<div class="section"><h2>DEPARTMENTAL STATUS</h2><div class="deptgrid">';
+    rep.depts.forEach(function(d){
+      html += '<div class="deptcard">'+
+        '<h3>'+esc(d.name).toUpperCase()+'</h3>'+
+        '<div class="contacts">Lead contact(s): '+esc(d.contacts||'\u2014')+'</div>'+
+        '<div class="status '+statusClass(d.status)+'">'+esc(d.status)+'</div>'+
+        '<p>'+esc(d.notes)+'</p>'+
+      '</div>';
+    });
+    html += '</div></div>';
+
+    html += '<div class="section"><h2>TRAINING CONTENT COVERED</h2><div class="topicbox">';
+    if (rep.topics.length){
+      rep.topics.forEach(function(t){ html += '<div class="topicitem">'+esc(t)+'</div>'; });
+    } else {
+      html += '<div class="topicitem" style="color:var(--grey);font-style:italic;">No topics listed.</div>';
+    }
+    html += '</div></div>';
+
+    html += '<div class="section"><h2>QUALITATIVE FEEDBACK SUMMARY</h2><div class="qualgrid">';
+    rep.quals.forEach(function(q){
+      html += '<div class="qualcard"><h3>'+esc(q.title)+'</h3><ul>';
+      q.points.forEach(function(p){ html += '<li>'+esc(p)+'</li>'; });
+      html += '</ul></div>';
+    });
+    html += '</div></div>';
+
+    html += '<div class="section"><h2>INDIVIDUAL TRAINING HOURS (THIS SESSION)</h2>'+
+      '<table class="hourstable"><thead><tr><th>Participant</th><th>Department</th><th>Hours</th></tr></thead><tbody>';
+    rep.hours.forEach(function(h){
+      html += '<tr><td>'+esc(h.name)+'</td><td>'+esc(h.dept)+'</td><td class="num">'+h.hours.toFixed(1)+' hrs</td></tr>';
+    });
+    html += '<tr class="total"><td colspan="2">TOTAL HOURS LOGGED</td><td class="num">'+rep.totalIndivHours.toFixed(1)+' hrs</td></tr>';
+    html += '</tbody></table></div>';
+
+    root.innerHTML = topBar() + '<div class="wrap">' + addPanel() + html + '</div>';
+    wireTopBar();
+    wireAddPanel();
+    var t = document.getElementById('dashTitle');
+    if (t) t.textContent = (rep.property || STATE.property) + ' \u2014 ' + (rep.programme || '');
+  }
+
+  // ======================================================================
+  // GROUP OVERVIEW
+  // ======================================================================
+  function loadGroup(){
+    var list = allReports();
+    if (!list.length){
+      showPlaceholder('No reports configured yet. Add published CSV links for each property\u2019s reports to the <code>PROPERTIES</code> list near the top of this file \u2014 they will then appear here and in the Group Overview automatically.');
+      return;
+    }
+    showPlaceholder('Loading '+list.length+' report'+(list.length===1?'':'s')+'\u2026');
+    Promise.all(list.map(function(item){
+      return fetchCSV(item.url).then(function(rows){
+        return Object.assign({}, item, extractReport(rows));
+      }).catch(function(){ return Object.assign({}, item, {error:true}); });
+    })).then(function(reports){
+      renderGroup(reports.filter(function(r){ return !r.error; }), reports.filter(function(r){ return r.error; }));
+    });
+  }
+
+  function renderGroup(reports, failed){
+    var html = '';
+    var propertiesCovered = {};
+    var totalSat = 0, totalParticipants = 0;
+    var totalSessionHours = 0, totalIndivHours = 0;
+    var qTotals = {}; // qnum -> {label, sum, count}
+    var deptStatusCounts = {};
+
+    reports.forEach(function(rep){
+      propertiesCovered[rep.property] = true;
+      totalSat += rep.overallSat;
+      totalParticipants += (parseFloat(rep.participants) || 0);
+      totalSessionHours += (rep.sessionHours || 0);
+      totalIndivHours += (rep.totalIndivHours || 0);
+      rep.questions.forEach(function(q){
+        if (!qTotals[q.qnum]) qTotals[q.qnum] = {label:q.label, sum:0, count:0};
+        qTotals[q.qnum].sum += q.score;
+        qTotals[q.qnum].count += 1;
+      });
+      rep.depts.forEach(function(d){
+        var cls = statusClass(d.status);
+        deptStatusCounts[cls] = (deptStatusCounts[cls]||0) + 1;
+      });
+    });
+
+    var avgSat = reports.length ? totalSat / reports.length : 0;
+    var propCount = Object.keys(propertiesCovered).length;
+    var totalProps = Object.keys(PROPERTIES).length;
+
+    html += '<div class="meta">Group overview across '+reports.length+' loaded report'+(reports.length===1?'':'s')+
+      ', covering '+propCount+' of '+totalProps+' properties.</div>';
+
+    html += '<div class="kpis">'+
+      '<div class="kpi"><div class="val">'+pct(avgSat)+'</div><div class="lab">GROUP AVG SATISFACTION</div></div>'+
+      '<div class="kpi"><div class="val">'+reports.length+'</div><div class="lab">REPORTS LOADED</div></div>'+
+      '<div class="kpi"><div class="val">'+propCount+' / '+totalProps+'</div><div class="lab">PROPERTIES COVERED</div></div>'+
+      '<div class="kpi gold"><div class="val">'+totalParticipants+'</div><div class="lab">TOTAL PARTICIPANTS</div></div>'+
+    '</div>';
+
+    html += '<div class="kpis" style="grid-template-columns:1fr 1fr;">'+
+      '<div class="kpi"><div class="val">'+totalSessionHours.toFixed(1)+' hrs</div><div class="lab">TOTAL TRAINING HOURS DELIVERED (ALL REPORTS)</div></div>'+
+      '<div class="kpi gold"><div class="val">'+totalIndivHours.toFixed(1)+' hrs</div><div class="lab">TOTAL INDIVIDUAL HOURS LOGGED (ALL REPORTS)</div></div>'+
+    '</div>';
+
+    // Average score per question across all reports
+    var qArr = Object.keys(qTotals).map(function(qn){
+      var t = qTotals[qn];
+      return {qnum:qn, label:t.label, score: t.sum / t.count};
+    }).sort(function(a,b){ return b.score - a.score; });
+
+    if (qArr.length){
+      html += '<div class="section"><h2>GROUP AVERAGE \u2014 SATISFACTION BY EVALUATION QUESTION</h2><div class="scorebox">';
+      qArr.forEach(function(q){
+        var color = tierColor(q.score);
+        html += '<div class="scorerow">'+
+          '<div class="qlabel">'+esc(q.qnum)+' \u2014 '+esc(q.label)+'</div>'+
+          '<div class="bartrack"><div class="barfill" style="width:'+(q.score*100)+'%;background:'+color+'"></div></div>'+
+          '<div class="pct" style="color:'+color+'">'+pct(q.score)+'</div>'+
+        '</div>';
+      });
+      html += '</div>';
+      html += '<div class="legend">'+
+        '<span><span class="swatch" style="background:'+GOOD+'"></span>Excellent (97%+)</span>'+
+        '<span><span class="swatch" style="background:'+MID+'"></span>Strong (92\u201396%)</span>'+
+        '<span><span class="swatch" style="background:'+LOW+'"></span>Needs attention (&lt;92%)</span>'+
+      '</div></div>';
+    }
+
+    // Departmental status roll-up
+    var statusLabels = {good:'On Track / Engaged / Encouraging', mid:'Follow-up Planned', low:'Needs Attention'};
+    var totalDeptEntries = Object.values(deptStatusCounts).reduce(function(a,b){return a+b;},0);
+    if (totalDeptEntries){
+      html += '<div class="section"><h2>DEPARTMENTAL STATUS \u2014 ACROSS ALL LOADED REPORTS</h2><div class="scorebox">';
+      ['good','mid','low'].forEach(function(cls){
+        var n = deptStatusCounts[cls] || 0;
+        var frac = totalDeptEntries ? n/totalDeptEntries : 0;
+        var color = cls==='good'?GOOD:(cls==='mid'?MID:LOW);
+        html += '<div class="scorerow">'+
+          '<div class="qlabel">'+statusLabels[cls]+'</div>'+
+          '<div class="bartrack"><div class="barfill" style="width:'+(frac*100)+'%;background:'+color+'"></div></div>'+
+          '<div class="pct" style="color:'+color+'">'+n+'</div>'+
+        '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // Report-by-report table
+    html += '<div class="section"><h2>ALL LOADED REPORTS</h2><table class="reporttable"><thead><tr>'+
+      '<th>Property</th><th>Programme</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Session Hrs</th><th>Indiv. Hrs Logged</th>'+
+      '</tr></thead><tbody>';
+    reports.slice().sort(function(a,b){
+      if (a.property === b.property) return 0;
+      return a.property < b.property ? -1 : 1;
+    }).forEach(function(rep){
+      html += '<tr>'+
+        '<td><span class="lnk" data-prop="'+esc(rep.property)+'" data-idx="'+rep.idx+'">'+esc(rep.property)+'</span></td>'+
+        '<td>'+esc(rep.programme)+'</td>'+
+        '<td>'+esc(rep.reportDate || rep.monthYear)+'</td>'+
+        '<td style="color:'+tierColor(rep.overallSat)+';font-weight:800;">'+pct(rep.overallSat)+'</td>'+
+        '<td>'+esc(rep.participants)+'</td>'+
+        '<td>'+rep.sessionHours.toFixed(1)+'</td>'+
+        '<td>'+rep.totalIndivHours.toFixed(1)+'</td>'+
+      '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // Property coverage checklist
+    html += '<div class="section"><h2>PROPERTY COVERAGE</h2><div class="covgrid">';
+    Object.keys(PROPERTIES).sort().forEach(function(p){
+      var n = PROPERTIES[p].length;
+      var cls = n ? '' : 'none';
+      html += '<div class="covitem '+cls+'"><span>'+esc(p)+'</span><span class="n">'+(n ? n+' report'+(n===1?'':'s') : 'none yet')+'</span></div>';
+    });
+    html += '</div></div>';
+
+    if (failed.length){
+      html += '<div class="insight" style="border-left-color:'+LOW+';"><b>Note:</b> '+failed.length+' report'+(failed.length===1?'':'s')+' could not be loaded (check the published CSV links): '+
+        failed.map(function(f){ return esc(f.property)+' \u2014 '+esc(f.label); }).join(', ') + '.</div>';
+    }
+
+    root.innerHTML = topBar() + '<div class="wrap">' + addPanel() + html + '</div>';
+    wireTopBar();
+    wireAddPanel();
+
+    // wire row links to jump to a single report view
+    root.querySelectorAll('.reporttable .lnk').forEach(function(el){
+      el.addEventListener('click', function(){
+        var prop = el.getAttribute('data-prop');
+        var idx = el.getAttribute('data-idx');
+        STATE.property = prop;
+        STATE.reportIdx = idx;
+        STATE.mode = 'report';
+        var rep = PROPERTIES[prop][idx];
+        loadSingle(rep.url);
+      });
+    });
+  }
+
+  // ======================================================================
+  // INIT
+  // ======================================================================
+  var first = allReports()[0];
+  if (first){
+    STATE.property = first.property;
+    STATE.reportIdx = String(first.idx);
+    loadSingle(first.url);
+  } else {
+    loadGroup();
+  }
+
+})();
+</script>
