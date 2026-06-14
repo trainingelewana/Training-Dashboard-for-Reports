@@ -117,6 +117,37 @@
   .hourstable tr.total td{font-weight:800;color:var(--forest);border-top:2px solid var(--gold);background:#fff;}
   .hourstable tr.total td.num{color:var(--gold);}
 
+  /* ---- category / division tags ---- */
+  .tagrow{display:flex;gap:12px;margin:0 0 28px;flex-wrap:wrap;}
+  .tag{
+    flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:4px;
+    padding:12px 16px;text-align:center;font-size:15px;font-weight:700;
+  }
+  .tag.gold{border-top:4px solid var(--gold);color:var(--gold);}
+  .tag.forest{border-top:4px solid var(--forest);color:var(--forest);}
+  .taglabel{display:block;font-size:10px;letter-spacing:1.5px;color:var(--grey);font-weight:700;margin-bottom:4px;}
+
+  /* ---- supporting documents ---- */
+  .docsbox{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .docrow{display:flex;align-items:center;gap:16px;padding:10px 14px;border-bottom:1px solid var(--line);}
+  .docrow:last-child{border-bottom:none;}
+  .docrow:nth-child(even){background:var(--cream);}
+  .doclabel{font-size:13px;color:var(--grey);font-weight:700;min-width:220px;}
+  .doclink a{color:#1155CC;font-size:13px;text-decoration:none;font-weight:600;}
+  .doclink a:hover{text-decoration:underline;}
+  .docempty{color:#bbb;font-size:13px;font-style:italic;}
+
+  /* ---- supporting documents ---- */
+  .docsgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .doccard{
+    background:#fff;border:1px solid var(--line);border-left:4px solid var(--forest);
+    border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  }
+  .doccard .doclabel{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--grey);text-transform:uppercase;}
+  .doccard a{font-size:13px;color:#1155CC;text-decoration:none;word-break:break-all;}
+  .doccard a:hover{text-decoration:underline;}
+  .doccard .nolink{font-size:13px;color:var(--line);font-style:italic;}
+
   /* ---- group overview table ---- */
   .reporttable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:13px;}
   .reporttable th{background:var(--forest);color:#fff;text-align:left;padding:8px 10px;font-weight:700;}
@@ -161,6 +192,14 @@
   }
   .delbtn:hover{text-decoration:underline;}
 
+  .savedlist{margin-top:14px;border-top:1px solid var(--line);padding-top:10px;}
+  .savedhead{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--grey);margin-bottom:6px;}
+  .saveditem{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:5px 0;font-size:13px;border-bottom:1px solid var(--cream);
+  }
+  .saveditem:last-child{border-bottom:none;}
+
   @media (max-width:640px){
     .kpis{grid-template-columns:repeat(2,1fr);}
     .deptgrid, .qualgrid, .covgrid{grid-template-columns:1fr;}
@@ -174,6 +213,11 @@
   // ======================================================================
   // CONFIG
   // ======================================================================
+  // Password required to remove a saved report from the "Saved Reports"
+  // list (so property GMs can't delete other properties' reports).
+  // Change this to something only L&D / management knows.
+  var ADMIN_PASSWORD = "elewana2026";
+
   // For each property, add one entry per training report:
   //   { label: "Luxury Guest Service \u2014 April 2026", url: "<published CSV link to that report's Data Entry tab>" }
   // The "Group Overview" automatically includes every report listed below
@@ -205,13 +249,14 @@
   // Training Report template spreadsheet.
   var ROW = {
     property: 4, programme: 5, monthYear: 6, trainer: 7, venue: 8, reportDate: 9,
-    participants: 12, trainingDays: 13, deptsCovered: 14, overallSat: 17,
-    sessionHours: 16,
-    qStart: 21, qEnd: 33,
-    deptStart: 37, deptEnd: 40,
-    topicStart: 47, topicEnd: 51,
-    qualStart: 56, qualEnd: 59,
-    indivStart: 64, indivEnd: 72, indivTotal: 73
+    participants: 12, trainingDays: 13, deptsCovered: 14,
+    sessionHours: 17, trainingCategory: 18, division: 19, overallSat: 20,
+    qStart: 24, qEnd: 36,
+    deptStart: 40, deptEnd: 43,
+    topicStart: 50, topicEnd: 54,
+    qualStart: 59, qualEnd: 62,
+    indivStart: 67, indivEnd: 75, indivTotal: 76,
+    docsStart: 80, docsEnd: 87
   };
 
   // ---------- persistence (browser local storage) ----------
@@ -263,6 +308,15 @@
     return 'good';
   }
   function pct(n){ return Math.round(n*100) + '%'; }
+  // Parses a value that may be a raw fraction (0.97) or a formatted
+  // percentage string ("97%") into a 0-1 fraction.
+  function pctVal(s){
+    var str = String(s==null?'':s).trim();
+    var n = parseFloat(str);
+    if (isNaN(n)) return 0;
+    if (str.indexOf('%') > -1) return n/100;
+    return n;
+  }
   function esc(s){ return (s==null?'':String(s)); }
 
   function parseCSV(text){
@@ -286,10 +340,23 @@
 
   function fetchCSV(url){
     if (CACHE[url]) return Promise.resolve(CACHE[url]);
-    return fetch(url).then(function(res){
-      if (!res.ok) throw new Error('HTTP '+res.status);
-      return res.text();
-    }).then(function(text){
+    var fetchText = function(u){
+      return fetch(u).then(function(res){
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        return res.text();
+      });
+    };
+    var attempts = [
+      function(){ return fetchText(url); },
+      function(){ return fetchText('https://api.allorigins.win/raw?url=' + encodeURIComponent(url)); },
+      function(){ return fetchText('https://corsproxy.io/?url=' + encodeURIComponent(url)); },
+      function(){ return fetchText('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)); }
+    ];
+    var tryNext = function(i){
+      if (i >= attempts.length) return Promise.reject(new Error('All fetch attempts failed'));
+      return attempts[i]().catch(function(){ return tryNext(i+1); });
+    };
+    return tryNext(0).then(function(text){
       var data = parseCSV(text);
       CACHE[url] = data;
       return data;
@@ -307,11 +374,11 @@
     rep.participants = g(rows, ROW.participants, 1) || '0';
     rep.trainingDays = parseFloat(g(rows, ROW.trainingDays, 1)) || 0;
     rep.deptsCovered = parseFloat(g(rows, ROW.deptsCovered, 1)) || 0;
-    rep.overallSat = parseFloat(g(rows, ROW.overallSat, 1)) || 0;
+    rep.overallSat = pctVal(g(rows, ROW.overallSat, 1));
 
     rep.questions = [];
     for (var r = ROW.qStart; r <= ROW.qEnd; r++){
-      var qnum = g(rows,r,0), qlabel = g(rows,r,1), score = parseFloat(g(rows,r,2));
+      var qnum = g(rows,r,0), qlabel = g(rows,r,1), score = pctVal(g(rows,r,2));
       if (!qnum) continue;
       rep.questions.push({qnum:qnum, label:qlabel, score:isNaN(score)?0:score});
     }
@@ -337,6 +404,13 @@
     }
 
     rep.sessionHours = parseFloat(g(rows, ROW.sessionHours, 1)) || 0;
+    rep.trainingCategory = g(rows, ROW.trainingCategory, 1) || '';
+    rep.division = g(rows, ROW.division, 1) || '';
+    rep.docs = [];
+    for (var r = ROW.docsStart; r <= ROW.docsEnd; r++){
+      var dlabel = g(rows,r,0), dlink = (g(rows,r,2)||'').trim();
+      if (dlabel) rep.docs.push({label:dlabel, link:dlink});
+    }
     rep.hours = [];
     for (var r = ROW.indivStart; r <= ROW.indivEnd; r++){
       var name = g(rows,r,0), dept = g(rows,r,2), hrs = parseFloat(g(rows,r,4));
@@ -344,6 +418,13 @@
       rep.hours.push({name:name, dept:dept, hours:isNaN(hrs)?0:hrs});
     }
     rep.totalIndivHours = parseFloat(g(rows, ROW.indivTotal, 4)) || 0;
+
+    var docLabels = ['Signed Attendance Register(s)','Completed Feedback Forms','Training Log / Record Sheet','Theory Pack / Handout Material','Photos from Session','Other Supporting Document'];
+    rep.docs = [];
+    for (var r = ROW.docsStart; r <= ROW.docsEnd; r++){
+      var label = g(rows,r,0), link = g(rows,r,2);
+      if (label) rep.docs.push({label:label, link:(link||'').trim()});
+    }
     return rep;
   }
 
@@ -378,7 +459,7 @@
 
     return '<div class="topbar">'+
       '<div><div class="brand">ELEWANA COLLECTION \u00b7 LEARNING & DEVELOPMENT</div>'+
-        '<div class="title" id="dashTitle">'+(STATE.mode==='group' ? 'Group Training Dashboard' : 'Training Report Dashboard')+'</div></div>'+
+        '<div class="title" id="dashTitle">'+(STATE.mode==='group' ? 'Group Training Dashboard \u2014 Specialised Training' : 'Training Report Dashboard')+'</div></div>'+
       '<div class="controls">'+
         '<select id="propSelect">'+propOptions+'</select>'+
         '<select id="reportSelect">'+reportOptions+'</select>'+
@@ -426,6 +507,20 @@
     Object.keys(PROPERTIES).sort().forEach(function(p){
       propOptions += '<option value="'+esc(p)+'">'+esc(p)+'</option>';
     });
+
+    var list = allReports();
+    var listHtml = '';
+    if (list.length){
+      listHtml = '<div class="savedlist"><div class="savedhead">SAVED REPORTS ('+list.length+')</div>';
+      list.forEach(function(item){
+        listHtml += '<div class="saveditem">'+
+          '<span>'+esc(item.property)+' \u2014 '+esc(item.label)+'</span>'+
+          '<button class="delbtn" type="button" data-prop="'+esc(item.property)+'" data-idx="'+item.idx+'">Remove</button>'+
+        '</div>';
+      });
+      listHtml += '</div>';
+    }
+
     return '<div class="addpanel">'+
       '<h2>ADD A NEW REPORT</h2>'+
       '<div class="addrow">'+
@@ -435,35 +530,65 @@
         '<button id="addBtn" type="button">Add & Sync</button>'+
       '</div>'+
       '<div class="addmsg" id="addMsg">Publish the report\u2019s \u201cData Entry\u201d tab to the web as CSV, then paste the link above. Saved reports are remembered on this device/browser.</div>'+
+      listHtml +
     '</div>';
   }
 
   function wireAddPanel(){
     var btn = document.getElementById('addBtn');
-    if (!btn) return;
-    btn.addEventListener('click', function(){
-      var prop = document.getElementById('addProp').value;
-      var label = document.getElementById('addLabel').value.trim();
-      var url = document.getElementById('addUrl').value.trim();
-      var msg = document.getElementById('addMsg');
-      if (!url || !label){
-        msg.textContent = 'Please enter both a report title and the CSV link.';
-        msg.className = 'addmsg bad';
-        return;
-      }
-      if (!PROPERTIES[prop]) PROPERTIES[prop] = [];
-      PROPERTIES[prop].push({label:label, url:url});
-      persistReports();
-      msg.textContent = 'Added \u2014 verifying link\u2026';
-      msg.className = 'addmsg';
-      fetchCSV(url).then(function(){
-        STATE.property = prop;
-        STATE.reportIdx = String(PROPERTIES[prop].length - 1);
-        STATE.mode = 'report';
-        loadSingle(url);
-      }).catch(function(){
-        msg.textContent = 'Saved, but the link could not be loaded yet \u2014 double-check it is published as CSV.';
-        msg.className = 'addmsg bad';
+    if (btn){
+      btn.addEventListener('click', function(){
+        var prop = document.getElementById('addProp').value;
+        var label = document.getElementById('addLabel').value.trim();
+        var url = document.getElementById('addUrl').value.trim();
+        var msg = document.getElementById('addMsg');
+        if (!url || !label){
+          msg.textContent = 'Please enter both a report title and the CSV link.';
+          msg.className = 'addmsg bad';
+          return;
+        }
+        if (!PROPERTIES[prop]) PROPERTIES[prop] = [];
+        PROPERTIES[prop].push({label:label, url:url});
+        persistReports();
+        msg.textContent = 'Added \u2014 verifying link\u2026';
+        msg.className = 'addmsg';
+        fetchCSV(url).then(function(){
+          STATE.property = prop;
+          STATE.reportIdx = String(PROPERTIES[prop].length - 1);
+          STATE.mode = 'report';
+          loadSingle(url);
+        }).catch(function(){
+          msg.textContent = 'Saved, but the link could not be loaded yet \u2014 double-check it is published as CSV.';
+          msg.className = 'addmsg bad';
+        });
+      });
+    }
+
+    root.querySelectorAll('.delbtn').forEach(function(el){
+      el.addEventListener('click', function(){
+        var entered = window.prompt('Enter the admin password to remove this report:');
+        if (entered === null) return; // cancelled
+        if (entered !== ADMIN_PASSWORD){
+          window.alert('Incorrect password \u2014 report was not removed.');
+          return;
+        }
+        var prop = el.getAttribute('data-prop');
+        var idx = parseInt(el.getAttribute('data-idx'), 10);
+        if (!PROPERTIES[prop]) return;
+        var removed = PROPERTIES[prop][idx];
+        PROPERTIES[prop].splice(idx, 1);
+        persistReports();
+        delete CACHE[removed.url];
+        // if the removed report was the one currently shown, fall back to placeholder/group
+        if (STATE.property === prop && String(STATE.reportIdx) === String(idx)){
+          STATE.reportIdx = '';
+          showPlaceholder('Removed "'+esc(removed.label)+'" for '+esc(prop)+'. Choose another report, or use Group Overview.');
+        } else if (STATE.mode === 'group'){
+          loadGroup();
+        } else {
+          // refresh panel in place
+          showPlaceholder('Removed "'+esc(removed.label)+'" for '+esc(prop)+'.');
+        }
       });
     });
   }
@@ -500,6 +625,13 @@
       '<div class="kpi"><div class="val">'+rep.sessionHours.toFixed(1)+' hrs</div><div class="lab">TRAINING HOURS DELIVERED (SESSION)</div></div>'+
       '<div class="kpi gold"><div class="val">'+rep.totalIndivHours.toFixed(1)+' hrs</div><div class="lab">TOTAL INDIVIDUAL HOURS LOGGED</div></div>'+
     '</div>';
+
+    if (rep.trainingCategory || rep.division){
+      html += '<div class="tagrow">'+
+        (rep.trainingCategory ? '<div class="tag gold"><span class="taglabel">CATEGORY</span>'+esc(rep.trainingCategory)+'</div>' : '')+
+        (rep.division ? '<div class="tag forest"><span class="taglabel">DIVISION</span>'+esc(rep.division)+'</div>' : '')+
+      '</div>';
+    }
 
     var qSorted = rep.questions.slice().sort(function(a,b){ return b.score - a.score; });
     html += '<div class="section"><h2>SATISFACTION BY EVALUATION QUESTION</h2><div class="scorebox">';
@@ -559,6 +691,22 @@
     html += '<tr class="total"><td colspan="2">TOTAL HOURS LOGGED</td><td class="num">'+rep.totalIndivHours.toFixed(1)+' hrs</td></tr>';
     html += '</tbody></table></div>';
 
+    // Supporting documents
+    html += '<div class="section"><h2>SUPPORTING DOCUMENTS & RECORDS</h2><div class="docsbox">';
+    if (rep.docs && rep.docs.length){
+      rep.docs.forEach(function(d){
+        html += '<div class="docrow">'+
+          '<div class="doclabel">'+esc(d.label)+'</div>'+
+          (d.link
+            ? '<div class="doclink"><a href="'+esc(d.link)+'" target="_blank" rel="noopener">Open document &rarr;</a></div>'
+            : '<div class="docempty">No link added yet</div>')+
+        '</div>';
+      });
+    } else {
+      html += '<div class="docrow"><div class="docempty">No supporting documents added. Paste Google Drive links into the Data Entry sheet — Section 8.</div></div>';
+    }
+    html += '</div></div>';
+
     root.innerHTML = topBar() + '<div class="wrap">' + addPanel() + html + '</div>';
     wireTopBar();
     wireAddPanel();
@@ -592,6 +740,8 @@
     var totalSessionHours = 0, totalIndivHours = 0;
     var qTotals = {}; // qnum -> {label, sum, count}
     var deptStatusCounts = {};
+    var catHours = {}; // category -> total indiv hours
+    var divHours = {}; // division -> total indiv hours
 
     reports.forEach(function(rep){
       propertiesCovered[rep.property] = true;
@@ -599,6 +749,12 @@
       totalParticipants += (parseFloat(rep.participants) || 0);
       totalSessionHours += (rep.sessionHours || 0);
       totalIndivHours += (rep.totalIndivHours || 0);
+      if (rep.trainingCategory){
+        catHours[rep.trainingCategory] = (catHours[rep.trainingCategory]||0) + (rep.totalIndivHours||0);
+      }
+      if (rep.division){
+        divHours[rep.division] = (divHours[rep.division]||0) + (rep.totalIndivHours||0);
+      }
       rep.questions.forEach(function(q){
         if (!qTotals[q.qnum]) qTotals[q.qnum] = {label:q.label, sum:0, count:0};
         qTotals[q.qnum].sum += q.score;
@@ -672,8 +828,40 @@
     }
 
     // Report-by-report table
+    // Hours by training category
+    var catArr = Object.keys(catHours).sort(function(a,b){ return catHours[b]-catHours[a]; });
+    if (catArr.length){
+      html += '<div class="section"><h2>TRAINING HOURS BY CATEGORY</h2><div class="scorebox">';
+      catArr.forEach(function(cat, i){
+        var hrs = catHours[cat];
+        var frac = totalIndivHours ? hrs/totalIndivHours : 0;
+        html += '<div class="scorerow">'+
+          '<div class="qlabel">'+esc(cat)+'</div>'+
+          '<div class="bartrack"><div class="barfill" style="width:'+(frac*100)+'%;background:var(--gold)"></div></div>'+
+          '<div class="pct" style="color:var(--gold);font-size:13px;">'+hrs.toFixed(1)+' hrs</div>'+
+        '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // Hours by division
+    var divArr = Object.keys(divHours).sort(function(a,b){ return divHours[b]-divHours[a]; });
+    if (divArr.length){
+      html += '<div class="section"><h2>TRAINING HOURS BY DIVISION</h2><div class="scorebox">';
+      divArr.forEach(function(div){
+        var hrs = divHours[div];
+        var frac = totalIndivHours ? hrs/totalIndivHours : 0;
+        html += '<div class="scorerow">'+
+          '<div class="qlabel">'+esc(div)+'</div>'+
+          '<div class="bartrack"><div class="barfill" style="width:'+(frac*100)+'%;background:var(--forest)"></div></div>'+
+          '<div class="pct" style="color:var(--forest);font-size:13px;">'+hrs.toFixed(1)+' hrs</div>'+
+        '</div>';
+      });
+      html += '</div></div>';
+    }
+
     html += '<div class="section"><h2>ALL LOADED REPORTS</h2><table class="reporttable"><thead><tr>'+
-      '<th>Property</th><th>Programme</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Session Hrs</th><th>Indiv. Hrs Logged</th>'+
+      '<th>Property</th><th>Programme</th><th>Category</th><th>Division</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Session Hrs</th><th>Indiv. Hrs</th>'+
       '</tr></thead><tbody>';
     reports.slice().sort(function(a,b){
       if (a.property === b.property) return 0;
@@ -682,6 +870,8 @@
       html += '<tr>'+
         '<td><span class="lnk" data-prop="'+esc(rep.property)+'" data-idx="'+rep.idx+'">'+esc(rep.property)+'</span></td>'+
         '<td>'+esc(rep.programme)+'</td>'+
+        '<td>'+esc(rep.trainingCategory)+'</td>'+
+        '<td>'+esc(rep.division)+'</td>'+
         '<td>'+esc(rep.reportDate || rep.monthYear)+'</td>'+
         '<td style="color:'+tierColor(rep.overallSat)+';font-weight:800;">'+pct(rep.overallSat)+'</td>'+
         '<td>'+esc(rep.participants)+'</td>'+
