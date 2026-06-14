@@ -245,19 +245,72 @@
     "Ngorongoro Explorer": []
   };
 
-  // Row indices (0-based) matching the "Data Entry" tab layout of the
-  // Training Report template spreadsheet.
-  var ROW = {
-    property: 4, programme: 5, monthYear: 6, trainer: 7, venue: 8, reportDate: 9,
-    participants: 12, trainingDays: 13, deptsCovered: 14,
-    sessionHours: 17, trainingCategory: 18, division: 19, overallSat: 20,
-    qStart: 24, qEnd: 36,
-    deptStart: 40, deptEnd: 43,
-    topicStart: 50, topicEnd: 54,
-    qualStart: 59, qualEnd: 62,
-    indivStart: 67, indivEnd: 75, indivTotal: 76,
-    docsStart: 80, docsEnd: 87
-  };
+  // Dynamic row detection — scans CSV labels to find each section,
+  // so adding/removing participant rows never breaks the mapping.
+  function detectRows(data){
+    var ROW = {
+      property: 4, programme: 5, monthYear: 6, trainer: 7, venue: 8, reportDate: 9,
+      participants: -1, trainingDays: -1, deptsCovered: -1,
+      sessionHours: -1, trainingCategory: -1, division: -1, overallSat: -1,
+      qStart: -1, qEnd: -1,
+      deptStart: -1, deptEnd: -1,
+      topicStart: -1, topicEnd: -1,
+      qualStart: -1, qualEnd: -1,
+      indivStart: -1, indivEnd: -1, indivTotal: -1,
+      docsStart: -1, docsEnd: -1
+    };
+    var inMetrics=false, inQ=false, inDept=false, inTopics=false, inQual=false, inIndiv=false, inDocs=false;
+    for (var i=0; i<data.length; i++){
+      var c0 = (data[i][0]||'').trim();
+      if (c0.indexOf('2. Key Metrics') > -1){ inMetrics=true; continue; }
+      if (c0.indexOf('3. Evaluation') > -1){ inMetrics=false; inQ=true; continue; }
+      if (c0.indexOf('4. Departmental') > -1){ inQ=false; inDept=true; continue; }
+      if (c0.indexOf('5. Training Content') > -1){ inDept=false; inTopics=true; continue; }
+      if (c0.indexOf('6. Qualitative') > -1){ inTopics=false; inQual=true; continue; }
+      if (c0.indexOf('7. Individual') > -1){ inQual=false; inIndiv=true; continue; }
+      if (c0.indexOf('8. Supporting') > -1){ inIndiv=false; inDocs=true; continue; }
+
+      if (inMetrics){
+        if (c0.indexOf('Number of Participants') > -1) ROW.participants = i;
+        else if (c0.indexOf('Training Days') > -1) ROW.trainingDays = i;
+        else if (c0.indexOf('Departments Covered') > -1) ROW.deptsCovered = i;
+        else if (c0.indexOf('Training Hours') > -1) ROW.sessionHours = i;
+        else if (c0.indexOf('Training Category') > -1) ROW.trainingCategory = i;
+        else if (c0.indexOf('Division') > -1) ROW.division = i;
+        else if (c0.indexOf('Overall Satisfaction') > -1) ROW.overallSat = i;
+      }
+      if (inQ){
+        if (c0 === 'Question #') continue;
+        if (c0.match(/^Q\d+$/)){
+          if (ROW.qStart < 0) ROW.qStart = i;
+          ROW.qEnd = i;
+        }
+      }
+      if (inDept){
+        if (c0 === 'Department') continue;
+        if (c0.indexOf('Status dropdown') > -1){ inDept=false; continue; }
+        if (c0){ if (ROW.deptStart < 0) ROW.deptStart = i; ROW.deptEnd = i; }
+      }
+      if (inTopics){
+        if (c0.indexOf('List each topic') > -1 || c0 === 'Topic / Module Covered') continue;
+        if (c0){ if (ROW.topicStart < 0) ROW.topicStart = i; ROW.topicEnd = i; }
+      }
+      if (inQual){
+        if (c0.indexOf('Summarise key') > -1 || c0 === 'Feedback Question') continue;
+        if (c0){ if (ROW.qualStart < 0) ROW.qualStart = i; ROW.qualEnd = i; }
+      }
+      if (inIndiv){
+        if (c0.indexOf('List each participant') > -1 || c0 === 'Participant Name') continue;
+        if (c0.indexOf('TOTAL HOURS LOGGED') > -1){ ROW.indivTotal = i; inIndiv=false; continue; }
+        if (c0){ if (ROW.indivStart < 0) ROW.indivStart = i; ROW.indivEnd = i; }
+      }
+      if (inDocs){
+        if (c0.indexOf('Paste shareable') > -1) continue;
+        if (c0){ if (ROW.docsStart < 0) ROW.docsStart = i; ROW.docsEnd = i; }
+      }
+    }
+    return ROW;
+  }
 
   // ---------- persistence (browser local storage) ----------
   var STORAGE_KEY = 'elewanaTrainingDashboard_v1';
@@ -366,6 +419,7 @@
   function g(rows, r, c){ return rows[r] && rows[r][c] !== undefined ? rows[r][c] : ''; }
 
   function extractReport(rows){
+    var ROW = detectRows(rows);
     var rep = {};
     rep.property = g(rows, ROW.property, 1);
     rep.programme = g(rows, ROW.programme, 1);
