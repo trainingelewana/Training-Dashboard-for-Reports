@@ -1529,7 +1529,7 @@ function renderGroup(loaded, allRpts){
         '<div class="gb-meta">'+loaded.length+' report'+(loaded.length===1?"":"s")+' across '+Object.keys(propsCovered).length+' of '+PROPERTIES.length+' properties</div>'+
       '</div>'+
     '</div>'+
-    '<div class="section-wrap">';
+    '<div class="section-wrap">'+
     '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
       kpiCard(pct(avgSat),"Group Avg Satisfaction","gold")+
       kpiCard(loaded.length,"Reports Loaded","forest")+
