@@ -1065,9 +1065,13 @@ function detectRows(data){
     }
     if(inQ){ if(c0.match(/^Q\d+$/)){ if(ROW.qStart<0)ROW.qStart=i; ROW.qEnd=i; } }
     if(inD){ if(c0==="Department")continue; if(c0.indexOf("Status dropdown")>-1){inD=false;continue;} if(c0){if(ROW.deptStart<0)ROW.deptStart=i;ROW.deptEnd=i;} }
+    // Topics: content is in col 0, skip header rows
     if(inT){ if(c0.indexOf("List each")>-1||c0==="Topic / Module Covered")continue; if(c0){if(ROW.topicStart<0)ROW.topicStart=i;ROW.topicEnd=i;} }
+    // Quals: title in col 0, summary in col 2 (merged cells collapse)
     if(inQl){ if(c0.indexOf("Summarise")>-1||c0==="Feedback Question")continue; if(c0){if(ROW.qualStart<0)ROW.qualStart=i;ROW.qualEnd=i;} }
+    // Individual hours: name col 0, dept col 2, hours col 4 (merged cells collapse to every 2nd col)
     if(inI){ if(c0.indexOf("List each participant")>-1||c0==="Participant Name")continue; if(c0.indexOf("TOTAL HOURS")>-1){ROW.indivTotal=i;inI=false;continue;} if(c0){if(ROW.indivStart<0)ROW.indivStart=i;ROW.indivEnd=i;} }
+    // Docs: label col 0, link col 2 (merged cells collapse)
     if(inDoc){ if(c0.indexOf("Paste shareable")>-1)continue; if(c0){if(ROW.docsStart<0)ROW.docsStart=i;ROW.docsEnd=i;} }
   }
   return ROW;
@@ -1090,29 +1094,45 @@ function extractReport(rows){
   rep.division=g(ROW.division,1)||"";
   rep.questions=[];
   for(var r=ROW.qStart;r<=ROW.qEnd&&r>=0;r++){
+    // Q scores: qnum col 0, label col 1, score col 2
     var qn=g(r,0),ql=g(r,1),sc=pv(g(r,2));
     if(qn) rep.questions.push({qnum:qn,label:ql,score:sc});
   }
   rep.depts=[];
   for(var r=ROW.deptStart;r<=ROW.deptEnd&&r>=0;r++){
+    // Dept: name col 0, contacts col 1, status col 3, notes col 5
+    // CSV collapses merged cols so: name=0, contacts=1, status=3, notes=5
     var dn=g(r,0),dc=g(r,1),ds=g(r,3),dnotes=g(r,5);
     if(dn) rep.depts.push({name:dn,contacts:dc,status:ds,notes:dnotes});
   }
   rep.topics=[];
-  for(var r=ROW.topicStart;r<=ROW.topicEnd&&r>=0;r++){ var t=g(r,0); if(t) rep.topics.push(t); }
+  for(var r=ROW.topicStart;r<=ROW.topicEnd&&r>=0;r++){
+    // Topics: content in col 0 only
+    var t=g(r,0); if(t) rep.topics.push(t);
+  }
   rep.quals=[];
   for(var r=ROW.qualStart;r<=ROW.qualEnd&&r>=0;r++){
+    // Quals: title col 0, summary col 2 (merged label+col cols collapse)
     var qt=g(r,0),qs=g(r,2);
-    if(qt) rep.quals.push({title:qt,points:(qs||"").split("\n").filter(Boolean)});
+    if(qt){
+      // newlines in CSV may be stripped — split on common separators
+      var pts=(qs||"").split(/\n/).filter(Boolean);
+      rep.quals.push({title:qt,points:pts});
+    }
   }
   rep.hours=[];
   for(var r=ROW.indivStart;r<=ROW.indivEnd&&r>=0;r++){
+    // Individual hours: name col 0, dept col 2, hours col 4 (merged cells collapse)
     var hn=g(r,0),hd=g(r,2),hh=parseFloat(g(r,4));
     if(hn) rep.hours.push({name:hn,dept:hd,hours:isNaN(hh)?0:hh});
   }
-  rep.totalIndivHours=parseFloat(g(ROW.indivTotal,4))||0;
+  // Total hours: col 4 (hours column, merged label cols)
+  rep.totalIndivHours=parseFloat(g(ROW.indivTotal,4))||
+                      parseFloat(g(ROW.indivTotal,2))||
+                      parseFloat(g(ROW.indivTotal,1))||0;
   rep.docs=[];
   for(var r=ROW.docsStart;r<=ROW.docsEnd&&r>=0;r++){
+    // Docs: label col 0, link col 2 (merged cols collapse)
     var dl=g(r,0),du=(g(r,2)||"").trim();
     if(dl) rep.docs.push({label:dl,link:du});
   }
