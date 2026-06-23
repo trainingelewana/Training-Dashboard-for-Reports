@@ -954,43 +954,100 @@ var modalEl = document.getElementById("adminModal");
 // ================================================================
 // PERSISTENCE
 // ================================================================
-var STORE_KEY = "elewanaTrainingDash_v2";
+// ================================================================
+// REGISTRY — Live Google Sheet (add rows there, dashboard updates for everyone)
+// ================================================================
+// This is the published CSV link for the "Elewana Training Report Registry" sheet.
+// Column A = Property Name, Column B = Report Title, Column C = Published CSV Link
+// Add a new row there every time you complete a report — no code changes needed.
+var REGISTRY_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXBeWbYcy3WlJiNsBYqVdsXxQ83FJmlXoIZhEpic7LCddRngx69KJ5d42YXQnVZg_rZTiRBSAA5HM1/pub?gid=0&single=true&output=csv";
 
-function loadStored(){
-  try {
-    var raw = localStorage.getItem(STORE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch(e){ return {}; }
+// In-memory registry — loaded once from the Google Sheet on startup
+var REGISTRY = {}; // { propertyName: [{label, url}, ...] }
+var REGISTRY_LOADED = false;
+var REGISTRY_CALLBACKS = [];
+
+function loadRegistry(cb){
+  if(REGISTRY_LOADED){ cb(); return; }
+  REGISTRY_CALLBACKS.push(cb);
+  if(REGISTRY_CALLBACKS.length > 1) return; // already fetching
+  fetchCSV(REGISTRY_URL, function(err, rows){
+    if(!err){
+      // Skip header row (row 0), parse property / label / url
+      for(var i=1; i<rows.length; i++){
+        var prop = (rows[i][0]||"").trim();
+        var label = (rows[i][1]||"").trim();
+        var url = (rows[i][2]||"").trim();
+        if(!prop || !url) continue;
+        if(!REGISTRY[prop]) REGISTRY[prop] = [];
+        REGISTRY[prop][label] = url; // temp — rebuild as array below
+      }
+      // Rebuild as proper arrays preserving order
+      REGISTRY = {};
+      for(var i=1; i<rows.length; i++){
+        var prop = (rows[i][0]||"").trim();
+        var label = (rows[i][1]||"").trim();
+        var url = (rows[i][2]||"").trim();
+        if(!prop || !url) continue;
+        if(!REGISTRY[prop]) REGISTRY[prop] = [];
+        REGISTRY[prop].push({label:label, url:url});
+      }
+    }
+    REGISTRY_LOADED = true;
+    var cbs = REGISTRY_CALLBACKS.slice();
+    REGISTRY_CALLBACKS = [];
+    cbs.forEach(function(fn){ fn(); });
+  });
 }
-function saveStored(data){
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch(e){}
-}
+
 function getReports(propName){
-  var s = loadStored();
-  return (s[propName] || []);
-}
-function addReport(propName, label, url){
-  var s = loadStored();
-  if (!s[propName]) s[propName] = [];
-  s[propName].push({ label:label, url:url });
-  saveStored(s);
-}
-function removeReport(propName, idx){
-  var s = loadStored();
-  if (!s[propName]) return;
-  s[propName].splice(idx, 1);
-  saveStored(s);
-  if (CACHE) delete CACHE[Object.keys(CACHE)[idx]];
+  return REGISTRY[propName] || [];
 }
 function allLoadedReports(){
-  var s = loadStored();
   var list = [];
   PROPERTIES.forEach(function(p){
-    (s[p.name]||[]).forEach(function(r, i){
+    (REGISTRY[p.name]||[]).forEach(function(r, i){
       list.push({ property:p.name, code:p.code, label:r.label, url:r.url, idx:i });
     });
   });
   return list;
+}
+
+// Admin: add/remove still write to a local override layer so L&D can
+// manage without touching the Google Sheet directly (optional convenience).
+// The registry Google Sheet remains the source of truth for all users.
+var STORE_KEY = "elewanaTrainingDash_v3";
+function loadLocalOverrides(){
+  try{ var r=localStorage.getItem(STORE_KEY); return r?JSON.parse(r):{}; }catch(e){return{};}
+}
+function saveLocalOverrides(data){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function addReport(propName, label, url){
+  // Add to registry cache immediately so it's visible now
+  if(!REGISTRY[propName]) REGISTRY[propName]=[];
+  REGISTRY[propName].push({label:label, url:url});
+  // Also persist locally so it survives page refresh on this device
+  var s=loadLocalOverrides();
+  if(!s[propName]) s[propName]=[];
+  s[propName].push({label:label, url:url});
+  saveLocalOverrides(s);
+}
+function removeReport(propName, idx){
+  if(REGISTRY[propName]) REGISTRY[propName].splice(idx,1);
+  var s=loadLocalOverrides();
+  if(s[propName]) s[propName].splice(idx,1);
+  saveLocalOverrides(s);
+}
+function mergeLocalOverrides(){
+  var s=loadLocalOverrides();
+  Object.keys(s).forEach(function(prop){
+    if(!REGISTRY[prop]) REGISTRY[prop]=[];
+    s[prop].forEach(function(r){
+      var exists=REGISTRY[prop].some(function(x){return x.url===r.url;});
+      if(!exists) REGISTRY[prop].push(r);
+    });
+  });
 }
 
 // ================================================================
@@ -1180,6 +1237,19 @@ function wireTopbar(){
 // ================================================================
 function showHome(){
   STATE.view="home";
+  // Show loading state while registry fetches
+  app.innerHTML = renderTopbar() +
+    '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
+    '<div class="spinner" style="margin:0 auto 16px;"></div>'+
+    '<p style="color:var(--mist);font-size:14px;">Loading report registry…</p></div>';
+  wireTopbar();
+  loadRegistry(function(){
+    mergeLocalOverrides();
+    _renderHome();
+  });
+}
+
+function _renderHome(){
   var tz = PROPERTIES.filter(function(p){return p.country==="Tanzania";});
   var ke = PROPERTIES.filter(function(p){return p.country==="Kenya";});
 
@@ -1225,8 +1295,13 @@ function showHome(){
 function showPropertyReports(prop){
   STATE.view="property";
   STATE.property=prop;
+  loadRegistry(function(){
+    mergeLocalOverrides();
+    _renderPropertyReports(prop);
+  });
+}
+function _renderPropertyReports(prop){
   var reports = getReports(prop.name);
-
   var listHtml;
   if(reports.length===0){
     listHtml='<div class="empty-state">'+
@@ -1457,6 +1532,18 @@ function kpiCard(val, label, style){
 // ================================================================
 function showGroup(){
   STATE.view="group";
+  app.innerHTML = renderTopbar() +
+    '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
+    '<div class="spinner" style="margin:0 auto 16px;"></div>'+
+    '<p style="color:var(--mist);font-size:14px;">Loading registry and reports…</p></div>';
+  wireTopbar();
+  loadRegistry(function(){
+    mergeLocalOverrides();
+    _doShowGroup();
+  });
+}
+
+function _doShowGroup(){
   var allRpts=allLoadedReports();
 
   if(allRpts.length===0){
@@ -1710,16 +1797,20 @@ function renderAdminModal(){
 
       '<div class="steps">'+
         '<div class="step"><div class="step-num">1</div><div class="step-body">'+
-          '<div class="step-title">Open the property\'s Google Sheet</div>'+
-          '<div class="step-desc">Make sure the <strong>Data Entry</strong> tab is selected at the bottom.</div>'+
+          '<div class="step-title">Finish the report Google Sheet</div>'+
+          '<div class="step-desc">Complete the Data Entry tab for the property. Make sure the sheet is shared as "Anyone with the link can view".</div>'+
         '</div></div>'+
         '<div class="step"><div class="step-num">2</div><div class="step-body">'+
-          '<div class="step-title">Publish to web as CSV</div>'+
-          '<div class="step-desc">File → Share → Publish to web → select <code>Data Entry</code> tab → <code>CSV</code> format → click Publish → copy the link.</div>'+
+          '<div class="step-title">Publish Data Entry tab as CSV</div>'+
+          '<div class="step-desc">File → Share → Publish to web → select <code>Data Entry</code> tab → <code>CSV</code> format → Publish → copy link.</div>'+
         '</div></div>'+
         '<div class="step"><div class="step-num">3</div><div class="step-body">'+
-          '<div class="step-title">Fill in the form below and click Add</div>'+
-          '<div class="step-desc">Select the property, give the report a name, and paste the CSV link.</div>'+
+          '<div class="step-title">Add a row to the Report Registry sheet</div>'+
+          '<div class="step-desc">Open the <strong>Elewana Training Report Registry</strong> Google Sheet. Add a new row: Column A = property name (exact), Column B = report title, Column C = the CSV link. Save. <strong>Everyone\'s dashboard updates automatically.</strong></div>'+
+        '</div></div>'+
+        '<div class="step"><div class="step-num">4</div><div class="step-body">'+
+          '<div class="step-title">Or add it here directly (this device only)</div>'+
+          '<div class="step-desc">Use the form below to add a report immediately on this device. For everyone to see it, add the row to the Registry sheet (Step 3).</div>'+
         '</div></div>'+
       '</div>'+
 
@@ -1777,10 +1868,9 @@ function renderAdminModal(){
 function closeAdmin(){
   modalEl.classList.remove("open");
   modalEl.innerHTML="";
-  // Refresh current view
-  if(STATE.view==="home") showHome();
-  else if(STATE.view==="group") showGroup();
-  else if(STATE.view==="property"&&STATE.property) showPropertyReports(STATE.property);
+  if(STATE.view==="home") _renderHome();
+  else if(STATE.view==="group") _doShowGroup();
+  else if(STATE.view==="property"&&STATE.property) _renderPropertyReports(STATE.property);
 }
 
 // ================================================================
