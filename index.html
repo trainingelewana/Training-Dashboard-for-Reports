@@ -5,26 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elewana Collection — Training Dashboard</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+/*
+  EC Brand Palette — matches elewanacollection.com
+  PANTONE 7562C → #BD9A5E  Gold  (text on banners, accents)
+  PANTONE 877C  → #8D9090  Grey  (banners, section headers)
+  PANTONE 7527C → #F7F6F3  Cream (page background — sampled from brand PDF)
+*/
 :root {
-  --navy:      #0E1E2E;
-  --navy-mid:  #152639;
-  --navy-card: #1A2F44;
-  --navy-light:#1F3652;
-  --gold:      #BD9A5E;
-  --gold-light:#D4B580;
-  --gold-dim:  rgba(189,154,94,0.15);
-  --cream:     #F5EDD8;
-  --cream-dim: rgba(245,237,216,0.07);
-  --mist:      rgba(245,237,216,0.55);
-  --silver:    #8D9090;
-  --line:      rgba(201,162,75,0.2);
-  --good:      #3B8C5E;
-  --mid-col:   #C9A24B;
-  --low:       #B5562B;
-  --white:     #ffffff;
-  --radius:    8px;
+  --gold:         #BD9A5E;
+  --gold-light:   #D4B580;
+  --gold-dim:     rgba(189,154,94,0.10);
+
+  --grey-banner:  #6B6E6E;   /* darker grey for banners & section headers */
+  --grey-dark:    #6B6E6E;   /* slightly darker grey for hover states */
+  --grey-card:    #E8E8E7;   /* light grey cards */
+  --grey-card2:   #F0EFED;   /* lighter grey card variant */
+  --grey-border:  #D4D3D2;   /* subtle card borders */
+  --grey-line:    rgba(141,144,144,0.25); /* grey line dividers */
+
+  --cream-bg:     #F7F6F3;   /* exact EC cream background */
+  --cream-hover:  #EEECE9;   /* slightly darker on hover */
+
+  --text-dark:    #2E2B28;   /* primary body text */
+  --text-mid:     #6B6E6E;   /* secondary text = same as grey */
+  --text-light:   #F7F6F3;   /* text on dark/grey backgrounds */
+
+  /* Aliases for existing CSS variables so nothing breaks */
+  --navy:         #F7F6F3;   /* page bg */
+  --navy-mid:     #6B6E6E;   /* banners */
+  --navy-card:    #FFFFFF;   /* white cards */
+  --navy-light:   #EEECE9;   /* hover */
+  --cream:        #2E2B28;   /* primary text */
+  --cream-dim:    rgba(46,43,40,0.05);
+  --mist:         #6B6E6E;   /* secondary text */
+  --line:         rgba(141,144,144,0.30);
+  --silver:       #8D9090;
+  --stone:        #F7F6F3;   /* alias for text on grey banners */
+
+  --good:         #2F6B4F;
+  --mid-col:      #BD9A5E;
+  --low:          #B5562B;
+  --white:        #ffffff;
+  --radius:       8px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +55,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
   background: var(--navy);
   color: var(--cream);
   min-height: 100vh;
@@ -66,7 +89,7 @@ body {
   object-fit: contain;
 }
 .brand-text .name {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 17px;
   font-weight: 600;
   color: var(--gold);
@@ -77,7 +100,7 @@ body {
   font-size: 10px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--mist);
+  color: var(--text-light);opacity:0.85;
   margin-top: 1px;
 }
 .topbar-actions {
@@ -89,7 +112,7 @@ body {
   padding: 8px 18px;
   border-radius: 6px;
   border: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -98,13 +121,13 @@ body {
 }
 .btn-ghost {
   background: transparent;
-  color: var(--mist);
-  border: 1px solid var(--line);
+  color: var(--text-light);opacity:0.85;
+  border: 1px solid rgba(213,204,187,0.35);
 }
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 .btn-gold {
   background: var(--gold);
-  color: var(--navy);
+  color: #1C1A17;
 }
 .btn-gold:hover { background: var(--gold-light); }
 .btn-active {
@@ -125,7 +148,7 @@ body {
   margin: 0 auto;
 }
 .hero h1 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(28px, 5vw, 42px);
   font-weight: 700;
   color: var(--cream);
@@ -180,7 +203,7 @@ body {
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--mist);
+  color: var(--text-light);opacity:0.85;
   margin-bottom: 10px;
   padding-left: 2px;
 }
@@ -198,14 +221,17 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
+  box-shadow: 0 1px 4px rgba(189,154,94,0.08);
 }
 .prop-card:hover {
   border-color: var(--gold);
   background: var(--navy-light);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(189,154,94,0.15);
 }
 .prop-card .prop-name {
-  font-size: 13px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
   font-weight: 600;
   color: var(--cream);
   margin-bottom: 6px;
@@ -213,25 +239,26 @@ body {
 }
 .prop-card .prop-code {
   font-size: 10px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--silver);
   font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
 }
 .prop-card .prop-count {
   position: absolute;
   top: 10px;
   right: 10px;
   background: var(--gold);
-  color: var(--navy);
+  color: #1C1A17;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 20px;
 }
 .prop-card .prop-count.zero {
-  background: var(--cream-dim);
-  color: var(--mist);
+  background: var(--stone-dim);
+  color: var(--silver);
 }
 
 /* ===== REPORT LIST (after selecting a property) ===== */
@@ -252,11 +279,11 @@ body {
   align-items: center;
   gap: 6px;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
 }
 .back-btn:hover { color: var(--gold-light); }
 .prop-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 24px;
   color: var(--cream);
 }
@@ -307,21 +334,24 @@ body {
   margin-bottom: 28px;
 }
 .report-header .rh-prop {
-  font-size: 11px;
-  letter-spacing: 0.15em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--text-light);opacity:0.85;
   margin-bottom: 4px;
+  font-family: 'DM Sans', sans-serif;
 }
 .report-header .rh-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  color: var(--cream);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: #F0EBE0;
+  line-height: 1.2;
 }
 .report-header .rh-meta {
   font-size: 12px;
-  color: var(--mist);
-  margin-top: 4px;
+  color: var(--text-light);opacity:0.85;
+  margin-top: 6px;
 }
 
 /* KPI row */
@@ -339,23 +369,24 @@ body {
   border-radius: var(--radius);
   padding: 18px 14px;
   text-align: center;
+  box-shadow: 0 1px 4px rgba(189,154,94,0.08);
 }
 .kpi-card.forest { border-top-color: #2F6B4F; }
 .kpi-card .kv {
-  font-family: 'Playfair Display', serif;
-  font-size: 30px;
-  font-weight: 700;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
   color: var(--gold);
   line-height: 1;
   margin-bottom: 6px;
 }
-.kpi-card.forest .kv { color: #3B8C5E; }
+.kpi-card.forest .kv { color: var(--good); }
 .kpi-card .kl {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--mist);
+  color: var(--text-light);opacity:0.85;
 }
 
 /* Tag pills */
@@ -613,7 +644,7 @@ body {
 
 /* ===== GROUP OVERVIEW ===== */
 .group-banner {
-  background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%);
+  background: var(--navy-mid);
   border-bottom: 1px solid var(--line);
   padding: 28px;
   margin-bottom: 28px;
@@ -624,11 +655,12 @@ body {
   gap: 12px;
 }
 .group-banner h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  color: var(--cream);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: #F7F6F3;
 }
-.group-banner .gb-meta { font-size: 13px; color: var(--mist); }
+.group-banner .gb-meta { font-size: 13px; color: rgba(247,246,243,0.70); }
 
 .bar-chart-row {
   display: grid;
@@ -723,7 +755,7 @@ body {
   overflow-y: auto;
 }
 .modal h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 20px;
   color: var(--cream);
   margin-bottom: 6px;
@@ -802,7 +834,7 @@ body {
   color: var(--cream);
   padding: 10px 12px;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
   width: 100%;
 }
 .form-row select:focus,
@@ -842,7 +874,7 @@ body {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
   flex-shrink: 0;
 }
 .saved-item .si-remove:hover { color: #E07A50; }
@@ -1252,7 +1284,7 @@ function extractReport(rows){
 // ================================================================
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function pct(n){ return Math.round(n*100)+"%"; }
-function tierColor(s){ return s>=0.97?"#3B8C5E":s>=0.92?"#C9A24B":"#B5562B"; }
+function tierColor(s){ return s>=0.97?"#4A8C65":s>=0.92?"#BD9A5E":"#B5562B"; }
 function statusCls(s){ var x=(s||"").toLowerCase(); if(x.indexOf("attention")>-1||x.indexOf("risk")>-1)return"low-col"; if(x.indexOf("follow")>-1||x.indexOf("plan")>-1)return"mid-col"; return"good"; }
 
 // ================================================================
@@ -1533,8 +1565,8 @@ function renderReport(rows, meta){
           }).join("")+
         '</div>'+
         '<div class="legend-row">'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#3B8C5E"></div>Excellent (97%+)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#C9A24B"></div>Strong (92–96%)</div>'+
+          '<div class="legend-item"><div class="legend-dot" style="background:#4A8C65"></div>Excellent (97%+)</div>'+
+          '<div class="legend-item"><div class="legend-dot" style="background:#BD9A5E"></div>Strong (92–96%)</div>'+
           '<div class="legend-item"><div class="legend-dot" style="background:#B5562B"></div>Needs attention (&lt;92%)</div>'+
         '</div>'+
         (hi&&lo?'<div class="insight-box">Highest-rated: <strong>'+esc(hi.label)+'</strong> ('+pct(hi.score)+'). Area to watch: <strong>'+esc(lo.label)+'</strong> ('+pct(lo.score)+').</div>':'')+
@@ -1743,8 +1775,8 @@ function renderGroup(loaded, allRpts){
           }).join("")+
         '</div>'+
         '<div class="legend-row">'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#3B8C5E"></div>Excellent (97%+)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#C9A24B"></div>Strong (92–96%)</div>'+
+          '<div class="legend-item"><div class="legend-dot" style="background:#4A8C65"></div>Excellent (97%+)</div>'+
+          '<div class="legend-item"><div class="legend-dot" style="background:#BD9A5E"></div>Strong (92–96%)</div>'+
           '<div class="legend-item"><div class="legend-dot" style="background:#B5562B"></div>Needs attention (&lt;92%)</div>'+
         '</div>'+
       '</div>' : "")+
@@ -1790,7 +1822,7 @@ function renderGroup(loaded, allRpts){
            ["Follow-up Planned","mid-col",(deptCounts["mid-col"]||0)+(deptCounts.mid||0)],
            ["Needs Attention","low-col",deptCounts.low||0]].map(function(item){
             var f=totalDepts?item[2]/totalDepts:0;
-            var col=item[1]==="good"?"#3B8C5E":item[1]==="mid-col"?"#C9A24B":"#B5562B";
+            var col=item[1]==="good"?"#4A8C65":item[1]==="mid-col"?"#BD9A5E":"#B5562B";
             return '<div class="bar-chart-row">'+
               '<div class="bl">'+item[0]+'</div>'+
               '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:'+col+'"></div></div>'+
