@@ -888,6 +888,20 @@ body {
 }
 .insight-box strong { color: var(--cream); }
 
+/* Multi-property badge */
+.multi-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(189,154,94,0.12); border:1px solid var(--gold);
+  border-radius:6px; padding:8px 14px; font-size:13px;
+  font-weight:700; color:var(--gold); margin-bottom:16px;
+}
+.multi-props { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+.prop-chip {
+  background:var(--navy-card); border:1px solid var(--line);
+  border-radius:20px; padding:3px 12px; font-size:12px; color:var(--mist);
+}
+.prop-chip.host { border-color:var(--gold); color:var(--gold); font-weight:700; }
+
 /* Responsive */
 @media (max-width: 680px) {
   .kpi-row-4 { grid-template-columns: repeat(2, 1fr); }
@@ -1000,16 +1014,49 @@ function loadRegistry(cb){
 }
 
 function getReports(propName){
-  return REGISTRY[propName] || [];
+  // Returns reports either directly registered to this property
+  // OR that list this property in their propsRepresented field (from cache)
+  var direct = REGISTRY[propName] || [];
+  var cross = [];
+  // Check cached multi-property reports
+  Object.keys(MULTI_PROP_CACHE).forEach(function(url){
+    var props = MULTI_PROP_CACHE[url];
+    if(props.indexOf(propName) > -1){
+      // find this report's label from registry
+      var found = null;
+      Object.keys(REGISTRY).forEach(function(p){
+        (REGISTRY[p]||[]).forEach(function(r){
+          if(r.url === url) found = r;
+        });
+      });
+      if(found && !direct.some(function(d){return d.url===url;})){
+        cross.push({label:found.label+' ✦', url:url, crossProperty:true});
+      }
+    }
+  });
+  return direct.concat(cross);
 }
+
 function allLoadedReports(){
-  var list = [];
+  var list = [], seen = {};
   PROPERTIES.forEach(function(p){
     (REGISTRY[p.name]||[]).forEach(function(r, i){
-      list.push({ property:p.name, code:p.code, label:r.label, url:r.url, idx:i });
+      if(!seen[r.url]){
+        seen[r.url] = true;
+        list.push({ property:p.name, code:p.code, label:r.label, url:r.url, idx:i });
+      }
     });
   });
   return list;
+}
+
+// Cache of multi-property report URLs -> array of property names they cover
+var MULTI_PROP_CACHE = {};
+function cacheMultiProps(url, rep){
+  if(rep.propsRepresented && rep.propsRepresented.length > 0){
+    var all = [rep.property].concat(rep.propsRepresented);
+    MULTI_PROP_CACHE[url] = all;
+  }
 }
 
 // Admin: add/remove still write to a local override layer so L&D can
@@ -1095,6 +1142,7 @@ function fetchCSV(url, cb){
 // ================================================================
 function detectRows(data){
   var ROW={ property:4,programme:5,monthYear:6,trainer:7,venue:8,reportDate:9,
+    propsRepresented:-1,
     participants:-1,trainingDays:-1,deptsCovered:-1,
     sessionHours:-1,trainingCategory:-1,division:-1,overallSat:-1,
     qStart:-1,qEnd:-1,deptStart:-1,deptEnd:-1,
@@ -1110,6 +1158,7 @@ function detectRows(data){
     if(c0.indexOf("6. Qualitative")>-1){inT=false;inQl=true;continue;}
     if(c0.indexOf("7. Individual")>-1){inQl=false;inI=true;continue;}
     if(c0.indexOf("8. Supporting")>-1){inI=false;inDoc=true;continue;}
+    if(c0.indexOf("Properties Represented")>-1){ ROW.propsRepresented=i; continue; }
     if(inM){
       if(c0.indexOf("Number of Participants")>-1) ROW.participants=i;
       else if(c0.indexOf("Training Days")>-1) ROW.trainingDays=i;
@@ -1141,6 +1190,9 @@ function extractReport(rows){
   rep.property=g(ROW.property,1); rep.programme=g(ROW.programme,1);
   rep.monthYear=g(ROW.monthYear,1); rep.reportDate=g(ROW.reportDate,1);
   rep.trainer=g(ROW.trainer,1);
+  // Multi-property: parse comma-separated list from "Properties Represented" field
+  var propsRaw = ROW.propsRepresented>=0 ? (g(ROW.propsRepresented,1)||'').trim() : '';
+  rep.propsRepresented = propsRaw ? propsRaw.split(',').map(function(p){return p.trim();}).filter(Boolean) : [];
   rep.participants=parseFloat(g(ROW.participants,1))||0;
   rep.trainingDays=parseFloat(g(ROW.trainingDays,1))||0;
   rep.deptsCovered=parseFloat(g(ROW.deptsCovered,1))||0;
@@ -1249,19 +1301,49 @@ function _renderHome(){
   var tz = PROPERTIES.filter(function(p){return p.country==="Tanzania";});
   var ke = PROPERTIES.filter(function(p){return p.country==="Kenya";});
 
+  // Count multi-property reports
+  var multiReports = [];
+  Object.keys(MULTI_PROP_CACHE).forEach(function(url){
+    var allProps = MULTI_PROP_CACHE[url];
+    // find label
+    var label = '';
+    Object.keys(REGISTRY).forEach(function(p){
+      (REGISTRY[p]||[]).forEach(function(r){if(r.url===url) label=r.label;});
+    });
+    multiReports.push({url:url, label:label, props:allProps});
+  });
+
   var propCards = function(arr){
     return arr.map(function(p){
       var rpts = getReports(p.name);
+      var direct = (REGISTRY[p.name]||[]).length;
+      var cross = rpts.length - direct;
       var n = rpts.length;
       return '<div class="prop-card" data-prop="'+esc(p.name)+'">'+
         '<div class="prop-code">'+esc(p.code)+'</div>'+
         '<div class="prop-name">'+esc(p.name)+'</div>'+
         '<div class="prop-count '+(n===0?"zero":"")+'">'+
-          (n===0?"No reports":n+" report"+(n===1?"":"s"))+
+          (n===0 ? "No reports" :
+           direct+" report"+(direct===1?"":"s")+(cross>0?" + "+cross+" shared":"")+
+          "")+
         '</div>'+
       '</div>';
     }).join("");
   };
+
+  var multiSection = multiReports.length ?
+    '<div class="section-label" style="margin-top:32px;">Multi-Property Sessions</div>'+
+    '<div class="report-list" style="margin-bottom:32px;">'+
+      multiReports.map(function(item){
+        return '<div class="report-card" data-url="'+esc(item.url)+'" data-multi="1">'+
+          '<div>'+
+            '<div class="rc-label">✦ '+esc(item.label)+'</div>'+
+            '<div class="rc-meta">'+item.props.map(esc).join(' · ')+'</div>'+
+          '</div>'+
+          '<span class="rc-arrow">›</span>'+
+        '</div>';
+      }).join("")+
+    '</div>' : '';
 
   var html = renderTopbar()+
     '<div class="section-wrap" style="padding-top:40px;">'+
@@ -1269,6 +1351,7 @@ function _renderHome(){
         '<h1>Training Report <span>Dashboard</span></h1>'+
         '<p>Select a property to view its training reports, or open the Group Overview for a cross-property summary.</p>'+
       '</div>'+
+      multiSection+
       '<div class="section-label">Tanzania Properties</div>'+
       '<div class="prop-grid" style="margin-bottom:32px;">'+propCards(tz)+'</div>'+
       '<div class="section-label">Kenya Properties</div>'+
@@ -1281,6 +1364,14 @@ function _renderHome(){
     el.addEventListener("click", function(){
       var prop = PROPERTIES.find(function(p){return p.name===el.getAttribute("data-prop");});
       if(prop) showPropertyReports(prop);
+    });
+  });
+  // Wire multi-property report cards
+  document.querySelectorAll(".report-card[data-multi]").forEach(function(el){
+    el.addEventListener("click",function(){
+      var url = el.getAttribute("data-url");
+      var label = el.querySelector(".rc-label").textContent.replace("✦ ","");
+      loadAndShowReport(url,{label:label, url:url, propName:"Multi-Property Session"});
     });
   });
 }
@@ -1383,8 +1474,11 @@ function loadAndShowReport(url, meta){
 
 function renderReport(rows, meta){
   var rep=extractReport(rows);
+  // Cache multi-property info so other properties can find this report
+  cacheMultiProps(meta.url, rep);
   var qSorted=rep.questions.slice().sort(function(a,b){return b.score-a.score;});
   var hi=qSorted[0], lo=qSorted[qSorted.length-1];
+  var isMulti = rep.propsRepresented && rep.propsRepresented.length > 0;
 
   var html=renderTopbar()+
     '<div class="report-header">'+
@@ -1394,6 +1488,16 @@ function renderReport(rows, meta){
     '</div>'+
     '<div class="section-wrap">'+
       '<button class="back-btn" id="btnBackRpt" style="margin-bottom:24px;">← '+esc(meta.propName)+' Reports</button>'+
+
+      // Multi-property badge
+      (isMulti ?
+        '<div class="multi-badge">✦ Multi-Property Session</div>'+
+        '<div class="multi-props">'+
+          '<div class="prop-chip host">⌂ '+esc(rep.property||meta.propName)+' (host)</div>'+
+          rep.propsRepresented.map(function(p){
+            return '<div class="prop-chip">'+esc(p)+'</div>';
+          }).join('')+
+        '</div>' : '')+
 
       // KPIs row 1
       '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
