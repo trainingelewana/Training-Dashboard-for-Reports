@@ -1326,7 +1326,21 @@ function showHome(){
   wireTopbar();
   loadRegistry(function(){
     mergeLocalOverrides();
-    _renderHome();
+    // Pre-fetch all reports to populate MULTI_PROP_CACHE before rendering home
+    var allRpts = allLoadedReports();
+    if(allRpts.length === 0){ _renderHome(); return; }
+    var pending = allRpts.length;
+    allRpts.forEach(function(item){
+      fetchCSV(item.url, function(err, rows){
+        if(!err){
+          var rep = extractReport(rows);
+          rep.property = rep.property || item.property;
+          cacheMultiProps(item.url, rep);
+        }
+        pending--;
+        if(pending === 0) _renderHome();
+      });
+    });
   });
 }
 
