@@ -1247,8 +1247,9 @@ function extractReport(rows){
   }
   rep.topics=[];
   for(var r=ROW.topicStart;r<=ROW.topicEnd&&r>=0;r++){
-    // Topics: content in col 0 only
-    var t=g(r,0); if(t) rep.topics.push(t);
+    // Topics: label in col 0, link in col 2
+    var t=g(r,0), link=(g(r,2)||'').trim();
+    if(t) rep.topics.push({label:t, link:link});
   }
   rep.quals=[];
   for(var r=ROW.qualStart;r<=ROW.qualEnd&&r>=0;r++){
@@ -1593,7 +1594,13 @@ function renderReport(rows, meta){
       (rep.topics.length?
         '<div class="rpt-section">'+
           '<div class="rpt-section-title">Training Content Covered</div>'+
-          '<ul class="topic-list">'+rep.topics.map(function(t){return'<li>'+esc(t)+'</li>';}).join("")+'</ul>'+
+          '<ul class="topic-list">'+rep.topics.map(function(t){
+            var label = t.label || t;
+            var link = t.link || '';
+            return '<li>'+(link
+              ? '<a href="'+esc(link)+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-weight:600;">'+esc(label)+' <span style="font-size:11px;">↗</span></a>'
+              : esc(label))+'</li>';
+          }).join('')+'</ul>'+
         '</div>' : "")+
 
       // Qualitative feedback
