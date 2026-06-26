@@ -935,16 +935,157 @@ body {
 }
 .prop-chip.host { border-color:var(--gold); color:var(--gold); font-weight:700; }
 
-/* Responsive */
-@media (max-width: 680px) {
+/* ===== RESPONSIVE — TABLET (≤900px) ===== */
+@media (max-width: 900px) {
+  .section-wrap { padding: 0 16px 48px; }
   .kpi-row-4 { grid-template-columns: repeat(2, 1fr); }
-  .kpi-row-3 { grid-template-columns: repeat(2, 1fr); }
-  .kpi-row-2 { grid-template-columns: 1fr; }
-  .score-row { grid-template-columns: 1fr 100px 46px; }
-  .bar-chart-row { grid-template-columns: 1fr 100px 56px; }
+  .prop-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .coverage-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .bar-chart-row { grid-template-columns: 1fr 140px 70px; }
+  .score-row { grid-template-columns: 1fr 120px 50px; }
+  /* Group table — hide less critical columns on tablet */
+  .group-table .hide-tablet { display: none; }
+  .group-banner { padding: 20px; }
+  .report-header { padding: 18px 20px; }
+  .hours-table { font-size: 13px; }
+}
+
+/* ===== RESPONSIVE — MOBILE (≤600px) ===== */
+@media (max-width: 600px) {
+  /* Topbar */
+  .topbar { padding: 0 14px; height: 56px; gap: 10px; }
+  .brand-text .name { font-size: 14px; }
+  .brand-text .sub { display: none; }
+  .brand-logo { height: 30px; }
+  .btn { padding: 7px 12px; font-size: 12px; }
+  .topbar-actions { gap: 6px; }
+
+  /* Layout */
+  .section-wrap { padding: 0 12px 40px; }
+  .hero { padding: 32px 16px 28px; }
+  .hero h1 { font-size: 26px; }
+  .hero p { font-size: 14px; }
+
+  /* Property grid — 2 columns on mobile */
+  .prop-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .prop-card { padding: 12px 10px; }
+  .prop-card .prop-name { font-size: 13px; }
+
+  /* KPI grids — single column on small mobile, 2 col otherwise */
+  .kpi-row-4 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi-row-3 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi-row-2 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi-card { padding: 14px 10px; }
+  .kpi-card .kv { font-size: 24px; }
+  .kpi-card .kl { font-size: 10px; }
+
+  /* Score/bar rows */
+  .score-row { grid-template-columns: 1fr 70px 40px; gap: 6px; font-size: 12px; }
+  .bar-chart-row { grid-template-columns: 1fr 60px; gap: 6px; }
+  .bar-chart-row .bar-track { display: none; }
+  .bar-chart-row .bv { text-align: right; font-size: 12px; }
+  .bar-chart-row .bl { font-size: 12px; }
+
+  /* Report header */
+  .report-header { padding: 16px; margin-bottom: 16px; }
+  .report-header .rh-title { font-size: 20px; }
+  .report-header .rh-meta { font-size: 11px; }
+
+  /* Group banner */
+  .group-banner { padding: 16px; margin-bottom: 16px; }
+  .group-banner h2 { font-size: 20px; }
+
+  /* Group table — card layout on mobile */
+  .group-table { display: block; }
+  .group-table thead { display: none; }
+  .group-table tbody { display: block; }
+  .group-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    background: var(--navy-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--gold);
+  }
+  .group-table tr:hover td { background: transparent; }
+  .group-table td {
+    padding: 0;
+    border: none;
+    font-size: 12px;
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+  }
+  .group-table td::before {
+    content: attr(data-label);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 2px;
+  }
+  /* Hide less critical columns on mobile */
+  .group-table .hide-mobile { display: none; }
+
+  /* Hours table */
+  .hours-table { font-size: 12px; }
+  .hours-table th, .hours-table td { padding: 7px 8px; }
+
+  /* Coverage grid */
+  .coverage-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .cov-item { padding: 8px 10px; font-size: 11px; flex-direction: column; align-items: flex-start; gap: 2px; }
+
+  /* Tag pills */
+  .tag-row { flex-direction: column; gap: 8px; }
+  .tag-pill { min-width: unset; }
+
+  /* Multi props */
+  .multi-props { gap: 4px; }
+  .prop-chip { font-size: 11px; padding: 2px 9px; }
+
+  /* Qualitative & dept grids */
   .dept-grid, .qual-grid { grid-template-columns: 1fr; }
-  .group-table { font-size: 11px; }
-  .group-table th, .group-table td { padding: 6px 8px; }
+
+  /* Report list */
+  .report-card { padding: 12px 14px; }
+  .report-card .rc-label { font-size: 13px; }
+
+  /* Insight box */
+  .insight-box { font-size: 12px; }
+
+  /* Back btn */
+  .back-btn { font-size: 12px; }
+
+  /* Section label */
+  .section-label { font-size: 10px; }
+
+  /* Rpt section title */
+  .rpt-section-title { font-size: 10px; }
+
+  /* Admin modal */
+  .modal { padding: 20px 16px; }
+  .modal h3 { font-size: 18px; }
+
+  /* Doc rows */
+  .doc-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .doc-row a { font-size: 11px; }
+
+  /* Saved items */
+  .saved-item { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+/* ===== RESPONSIVE — TINY MOBILE (≤380px) ===== */
+@media (max-width: 380px) {
+  .kpi-row-4 { grid-template-columns: 1fr 1fr; }
+  .kpi-row-3 { grid-template-columns: 1fr 1fr; }
+  .kpi-row-2 { grid-template-columns: 1fr; }
+  .prop-grid { grid-template-columns: 1fr 1fr; }
+  .kpi-card .kv { font-size: 20px; }
+  .topbar-actions .btn-ghost:not(.btn-group-overview) { display: none; }
 }
 </style>
 </head>
@@ -1905,20 +2046,20 @@ function renderGroup(loaded, allRpts){
     '<div class="rpt-section">'+
       '<div class="rpt-section-title">All Reports</div>'+
       '<table class="group-table">'+
-        '<thead><tr><th>Property</th><th>Programme</th><th>Category</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Indiv. Hrs</th><th>Avg Hrs/Person</th></tr></thead>'+
+        '<thead><tr><th>Property</th><th>Programme</th><th class="hide-tablet">Category</th><th class="hide-mobile">Date</th><th>Satisfaction</th><th>Participants</th><th class="hide-mobile">Indiv. Hrs</th><th class="hide-tablet">Avg Hrs/Person</th></tr></thead>'+
         '<tbody>'+
           loaded.slice().sort(function(a,b){ return (a.meta.property<b.meta.property)?-1:1; }).map(function(item){
             var rep=item.rep, col=tierColor(rep.overallSat);
             var avgH=rep.participants?(rep.totalIndivHours/rep.participants):0;
             return '<tr>'+
-              '<td><span class="lnk" data-prop="'+esc(item.meta.property)+'" data-idx="'+item.meta.idx+'" data-url="'+esc(item.meta.url)+'">'+esc(item.meta.property)+'</span></td>'+
-              '<td>'+esc(rep.programme||item.meta.label)+'</td>'+
-              '<td>'+esc(rep.trainingCategory)+'</td>'+
-              '<td>'+esc(rep.reportDate||rep.monthYear)+'</td>'+
-              '<td style="color:'+col+';font-weight:700;">'+pct(rep.overallSat)+'</td>'+
-              '<td>'+rep.participants+'</td>'+
-              '<td>'+rep.totalIndivHours.toFixed(0)+'</td>'+
-              '<td>'+avgH.toFixed(1)+'</td>'+
+              '<td data-label="Property"><span class="lnk" data-prop="'+esc(item.meta.property)+'" data-idx="'+item.meta.idx+'" data-url="'+esc(item.meta.url)+'">'+esc(item.meta.property)+'</span></td>'+
+              '<td data-label="Programme">'+esc(rep.programme||item.meta.label)+'</td>'+
+              '<td class="hide-tablet" data-label="Category">'+esc(rep.trainingCategory)+'</td>'+
+              '<td class="hide-mobile" data-label="Date">'+esc(rep.reportDate||rep.monthYear)+'</td>'+
+              '<td data-label="Satisfaction" style="color:'+col+';font-weight:700;">'+pct(rep.overallSat)+'</td>'+
+              '<td data-label="Participants">'+rep.participants+'</td>'+
+              '<td class="hide-mobile" data-label="Indiv. Hrs">'+rep.totalIndivHours.toFixed(0)+'</td>'+
+              '<td class="hide-tablet" data-label="Avg Hrs/Person">'+avgH.toFixed(1)+'</td>'+
             '</tr>';
           }).join("")+
         '</tbody>'+
