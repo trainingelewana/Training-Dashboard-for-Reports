@@ -1668,8 +1668,12 @@ function renderReport(rows, meta){
   app.innerHTML=html;
   wireTopbar();
   document.getElementById("btnBackRpt").addEventListener("click",function(){
-    var prop=PROPERTIES.find(function(p){return p.name===meta.propName;});
-    if(prop) showPropertyReports(prop);
+    if(meta.propName==="Multi-Property Session"){
+      showHome();
+    } else {
+      var prop=PROPERTIES.find(function(p){return p.name===meta.propName;});
+      if(prop) showPropertyReports(prop);
+    }
   });
 }
 
