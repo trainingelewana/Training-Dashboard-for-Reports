@@ -362,6 +362,7 @@ body {
 }
 .kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
 .kpi-row-2 { grid-template-columns: repeat(2, 1fr); }
+.kpi-row-3 { grid-template-columns: repeat(3, 1fr); }
 .kpi-card {
   background: var(--navy-card);
   border: 1px solid var(--line);
@@ -937,6 +938,7 @@ body {
 /* Responsive */
 @media (max-width: 680px) {
   .kpi-row-4 { grid-template-columns: repeat(2, 1fr); }
+  .kpi-row-3 { grid-template-columns: repeat(2, 1fr); }
   .kpi-row-2 { grid-template-columns: 1fr; }
   .score-row { grid-template-columns: 1fr 100px 46px; }
   .bar-chart-row { grid-template-columns: 1fr 100px 56px; }
@@ -1738,9 +1740,10 @@ function _doShowGroup(){
 
 function renderGroup(loaded, allRpts){
   var totalSat=0, totalPax=0, totalSessionHrs=0, totalIndivHrs=0;
-  var qTotals={}, deptCounts={good:0,mid:0,low:0};
+  var qTotals={}, deptCounts={'good':0,'mid-col':0,'low-col':0};
   var catHrs={}, divHrs={};
   var propsCovered={};
+  var trainers={}, reportMonths={};
 
   loaded.forEach(function(item){
     var rep=item.rep;
@@ -1751,41 +1754,101 @@ function renderGroup(loaded, allRpts){
     totalIndivHrs+=(rep.totalIndivHours||0);
     if(rep.trainingCategory) catHrs[rep.trainingCategory]=(catHrs[rep.trainingCategory]||0)+(rep.totalIndivHours||0);
     if(rep.division) divHrs[rep.division]=(divHrs[rep.division]||0)+(rep.totalIndivHours||0);
+    // Trainer utilisation
+    if(rep.trainer){ rep.trainer.split(/[,;&]+/).forEach(function(t){ var tn=t.trim(); if(tn) trainers[tn]=true; }); }
+    // Report cadence by month
+    var m=rep.monthYear||rep.reportDate||'';
+    if(m){ var mk=m.substring(0,10); reportMonths[mk]=(reportMonths[mk]||0)+1; }
     rep.questions.forEach(function(q){
       if(!qTotals[q.qnum]) qTotals[q.qnum]={label:q.label,sum:0,count:0};
       qTotals[q.qnum].sum+=q.score; qTotals[q.qnum].count+=1;
     });
-    rep.depts.forEach(function(d){ deptCounts[statusCls(d.status)]=(deptCounts[statusCls(d.status)]||0)+1; });
+    rep.depts.forEach(function(d){
+      var cls=statusCls(d.status);
+      deptCounts[cls]=(deptCounts[cls]||0)+1;
+    });
   });
 
   var avgSat=loaded.length?totalSat/loaded.length:0;
+  var avgHrsPerPax=totalPax?totalIndivHrs/totalPax:0;
+  var avgTrainingDays=loaded.length?(loaded.reduce(function(s,i){return s+(i.rep.trainingDays||0);},0)/loaded.length):0;
+  var propsWithTraining=Object.keys(propsCovered).length;
+  var propsWithout=PROPERTIES.length-propsWithTraining;
+  var totalDepts=(deptCounts['good']||0)+(deptCounts['mid-col']||0)+(deptCounts['low-col']||0);
+  var deptOnTrackPct=totalDepts?Math.round((deptCounts['good']||0)/totalDepts*100):0;
+  var uniqueTrainers=Object.keys(trainers).length;
+  var uniqueMonths=Object.keys(reportMonths).length;
+  var reportsPerMonth=uniqueMonths?loaded.length/uniqueMonths:loaded.length;
+
   var qArr=Object.keys(qTotals).map(function(k){ var t=qTotals[k]; return{qnum:k,label:t.label,score:t.sum/t.count}; }).sort(function(a,b){return b.score-a.score;});
   var catArr=Object.keys(catHrs).sort(function(a,b){return catHrs[b]-catHrs[a];});
   var divArr=Object.keys(divHrs).sort(function(a,b){return divHrs[b]-divHrs[a];});
-  var totalDepts=deptCounts.good+deptCounts["mid-col"]+deptCounts["mid_col"]+deptCounts.mid+deptCounts.low;
-  totalDepts = (deptCounts.good||0)+(deptCounts["mid-col"]||0)+(deptCounts.low||0);
+
+  // Properties with zero training
+  var zeroProps=PROPERTIES.filter(function(p){return !propsCovered[p.name];});
 
   var html=renderTopbar()+
     '<div class="group-banner">'+
       '<div>'+
         '<button class="back-btn" id="btnBackGroup">← All Properties</button>'+
         '<h2 style="margin-top:8px;">Group Training Overview</h2>'+
-        '<div class="gb-meta">'+loaded.length+' report'+(loaded.length===1?"":"s")+' across '+Object.keys(propsCovered).length+' of '+PROPERTIES.length+' properties</div>'+
+        '<div class="gb-meta">'+loaded.length+' report'+(loaded.length===1?"":"s")+' across '+propsWithTraining+' of '+PROPERTIES.length+' properties</div>'+
       '</div>'+
     '</div>'+
     '<div class="section-wrap">'+
+
+    // ── ROW 1: Core reach metrics ──
+    '<div class="rpt-section-title" style="margin-bottom:10px;">Reach &amp; Volume</div>'+
     '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
       kpiCard(pct(avgSat),"Group Avg Satisfaction","gold")+
-      kpiCard(loaded.length,"Reports Loaded","forest")+
-      kpiCard(Object.keys(propsCovered).length+"/"+PROPERTIES.length,"Properties Covered","forest")+
-      kpiCard(totalPax,"Total Participants","gold")+
+      kpiCard(totalPax,"Total Participants Trained","gold")+
+      kpiCard(propsWithTraining+"/"+PROPERTIES.length,"Properties Active","forest")+
+      kpiCard(loaded.length,"Training Reports","forest")+
     '</div>'+
-    '<div class="kpi-row kpi-row-2" style="margin-bottom:28px;">'+
-      kpiCard(totalSessionHrs.toFixed(1)+" hrs","Total Training Hours Delivered","forest")+
-      kpiCard(totalIndivHrs.toFixed(1)+" hrs","Total Individual Hours Logged","gold")+
+    '<div class="kpi-row kpi-row-3" style="margin-bottom:10px;">'+
+      kpiCard(totalIndivHrs.toFixed(0)+" hrs","Total Individual Hours Logged","gold")+
+      kpiCard(totalSessionHrs.toFixed(1)+" hrs","Total Session Hours Delivered","forest")+
+      kpiCard(avgHrsPerPax.toFixed(1)+" hrs","Avg Hours per Participant","gold")+
     '</div>'+
 
-    // Avg Q scores
+    // ── ROW 2: Quality & operational metrics ──
+    '<div class="rpt-section-title" style="margin-bottom:10px;margin-top:20px;">Operational Health</div>'+
+    '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
+      kpiCard(deptOnTrackPct+"%","Departments On Track","forest")+
+      kpiCard(uniqueTrainers,"Trainers / Facilitators","forest")+
+      kpiCard(reportsPerMonth.toFixed(1),"Avg Reports per Month","gold")+
+      kpiCard(avgTrainingDays.toFixed(1)+" days","Avg Session Length","gold")+
+    '</div>'+
+
+    // ── Properties with zero training callout ──
+    (propsWithout>0?
+      '<div style="background:#fff8f0;border:1px solid #B5562B;border-left:4px solid #B5562B;border-radius:8px;padding:14px 18px;margin-bottom:24px;">'+
+        '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#B5562B;margin-bottom:6px;">'+propsWithout+' Propert'+(propsWithout===1?'y':'ies')+' with No Training Recorded</div>'+
+        '<div style="font-size:13px;color:#5a3a2a;">'+zeroProps.map(function(p){return esc(p.name);}).join(' &nbsp;·&nbsp; ')+'</div>'+
+      '</div>' :
+      '<div style="background:#f0f9f4;border:1px solid #2F6B4F;border-left:4px solid #2F6B4F;border-radius:8px;padding:14px 18px;margin-bottom:24px;">'+
+        '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F6B4F;">✦ All Properties Have Training Recorded</div>'+
+      '</div>')+
+
+    // ── Dept follow-up health bar ──
+    (totalDepts?
+      '<div class="rpt-section">'+
+        '<div class="rpt-section-title">Departmental Follow-Up Health — All Reports</div>'+
+        '<div class="score-table">'+
+          [['On Track / Engaged / Encouraging','#4A8C65',deptCounts['good']||0],
+           ['Follow-up Planned','#BD9A5E',(deptCounts['mid-col']||0)],
+           ['Needs Attention','#B5562B',deptCounts['low-col']||0]].map(function(item){
+            var f=totalDepts?item[2]/totalDepts:0;
+            return '<div class="bar-chart-row">'+
+              '<div class="bl">'+item[0]+'</div>'+
+              '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:'+item[1]+'"></div></div>'+
+              '<div class="bv" style="color:'+item[1]+';">'+item[2]+' ('+Math.round(f*100)+'%)</div>'+
+            '</div>';
+          }).join("")+
+        '</div>'+
+      '</div>' : "")+
+
+    // ── Avg Q scores ──
     (qArr.length?
       '<div class="rpt-section">'+
         '<div class="rpt-section-title">Group Average — Satisfaction by Question</div>'+
@@ -1806,7 +1869,7 @@ function renderGroup(loaded, allRpts){
         '</div>'+
       '</div>' : "")+
 
-    // Hours by category
+    // ── Hours by category ──
     (catArr.length?
       '<div class="rpt-section">'+
         '<div class="rpt-section-title">Training Hours by Category</div>'+
@@ -1816,13 +1879,13 @@ function renderGroup(loaded, allRpts){
             return '<div class="bar-chart-row">'+
               '<div class="bl">'+esc(cat)+'</div>'+
               '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:var(--gold)"></div></div>'+
-              '<div class="bv">'+h.toFixed(1)+'</div>'+
+              '<div class="bv">'+h.toFixed(0)+'h ('+Math.round(f*100)+'%)</div>'+
             '</div>';
           }).join("")+
         '</div>'+
       '</div>' : "")+
 
-    // Hours by division
+    // ── Hours by division ──
     (divArr.length?
       '<div class="rpt-section">'+
         '<div class="rpt-section-title">Training Hours by Division</div>'+
@@ -1832,41 +1895,21 @@ function renderGroup(loaded, allRpts){
             return '<div class="bar-chart-row">'+
               '<div class="bl">'+esc(div)+'</div>'+
               '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:#2F6B4F"></div></div>'+
-              '<div class="bv">'+h.toFixed(1)+'</div>'+
+              '<div class="bv">'+h.toFixed(0)+'h ('+Math.round(f*100)+'%)</div>'+
             '</div>';
           }).join("")+
         '</div>'+
       '</div>' : "")+
 
-    // Dept status rollup
-    (totalDepts?
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Departmental Status — All Reports</div>'+
-        '<div class="score-table">'+
-          [["On Track / Engaged / Encouraging","good",deptCounts.good||0],
-           ["Follow-up Planned","mid-col",(deptCounts["mid-col"]||0)+(deptCounts.mid||0)],
-           ["Needs Attention","low-col",deptCounts.low||0]].map(function(item){
-            var f=totalDepts?item[2]/totalDepts:0;
-            var col=item[1]==="good"?"#4A8C65":item[1]==="mid-col"?"#BD9A5E":"#B5562B";
-            return '<div class="bar-chart-row">'+
-              '<div class="bl">'+item[0]+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:'+col+'"></div></div>'+
-              '<div class="bv" style="color:'+col+'">'+item[2]+'</div>'+
-            '</div>';
-          }).join("")+
-        '</div>'+
-      '</div>' : "")+
-
-    // Reports table
+    // ── Reports table ──
     '<div class="rpt-section">'+
-      '<div class="rpt-section-title">All Loaded Reports</div>'+
+      '<div class="rpt-section-title">All Reports</div>'+
       '<table class="group-table">'+
-        '<thead><tr><th>Property</th><th>Programme</th><th>Category</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Indiv. Hrs</th></tr></thead>'+
+        '<thead><tr><th>Property</th><th>Programme</th><th>Category</th><th>Date</th><th>Satisfaction</th><th>Participants</th><th>Indiv. Hrs</th><th>Avg Hrs/Person</th></tr></thead>'+
         '<tbody>'+
-          loaded.slice().sort(function(a,b){
-            return (a.meta.property<b.meta.property)?-1:1;
-          }).map(function(item){
+          loaded.slice().sort(function(a,b){ return (a.meta.property<b.meta.property)?-1:1; }).map(function(item){
             var rep=item.rep, col=tierColor(rep.overallSat);
+            var avgH=rep.participants?(rep.totalIndivHours/rep.participants):0;
             return '<tr>'+
               '<td><span class="lnk" data-prop="'+esc(item.meta.property)+'" data-idx="'+item.meta.idx+'" data-url="'+esc(item.meta.url)+'">'+esc(item.meta.property)+'</span></td>'+
               '<td>'+esc(rep.programme||item.meta.label)+'</td>'+
@@ -1874,14 +1917,15 @@ function renderGroup(loaded, allRpts){
               '<td>'+esc(rep.reportDate||rep.monthYear)+'</td>'+
               '<td style="color:'+col+';font-weight:700;">'+pct(rep.overallSat)+'</td>'+
               '<td>'+rep.participants+'</td>'+
-              '<td>'+rep.totalIndivHours.toFixed(1)+'</td>'+
+              '<td>'+rep.totalIndivHours.toFixed(0)+'</td>'+
+              '<td>'+avgH.toFixed(1)+'</td>'+
             '</tr>';
           }).join("")+
         '</tbody>'+
       '</table>'+
     '</div>'+
 
-    // Coverage
+    // ── Property Coverage ──
     '<div class="rpt-section">'+
       '<div class="rpt-section-title">Property Coverage</div>'+
       '<div class="coverage-grid">'+
@@ -1889,7 +1933,7 @@ function renderGroup(loaded, allRpts){
           var n=getReports(p.name).length;
           return '<div class="cov-item '+(n===0?"none":"")+'">'+
             '<span class="ci-name">'+esc(p.name)+'</span>'+
-            '<span class="ci-count">'+(n===0?"—":n+" rpt"+(n===1?"":"s"))+'</span>'+
+            '<span class="ci-count">'+(n===0?"No reports":n+" rpt"+(n===1?"":"s"))+'</span>'+
           '</div>';
         }).join("")+
       '</div>'+
