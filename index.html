@@ -1224,7 +1224,7 @@ function extractReport(rows){
   rep.trainer=g(ROW.trainer,1);
   // Multi-property: parse comma-separated list from "Properties Represented" field
   var propsRaw = ROW.propsRepresented>=0 ? (g(ROW.propsRepresented,1)||'').trim() : '';
-  rep.propsRepresented = propsRaw ? propsRaw.split(',').map(function(p){return p.trim();}).filter(Boolean) : [];
+  rep.propsRepresented = propsRaw ? propsRaw.split(',').map(function(p){return p.trim();}).filter(function(p){ return p && p.toLowerCase().indexOf('not applicable') === -1; }) : [];
   rep.participants=parseFloat(g(ROW.participants,1))||0;
   rep.trainingDays=parseFloat(g(ROW.trainingDays,1))||0;
   rep.deptsCovered=parseFloat(g(ROW.deptsCovered,1))||0;
