@@ -908,6 +908,85 @@ body {
   line-height: 1.6;
 }
 
+/* ===== YTD TRACKER DASHBOARD ===== */
+.rag-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+.rag-green  { background:#2F6B4F; }
+.rag-amber  { background:#BD9A5E; }
+.rag-red    { background:#B5562B; }
+.rag-grey   { background:#9E9E9E; }
+
+.ytd-prop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-bottom:28px; }
+.ytd-prop-card {
+  background:var(--navy-card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px 18px; cursor:pointer; transition:all 0.2s;
+  box-shadow:0 1px 4px rgba(189,154,94,0.08);
+  border-left:4px solid var(--grey-border);
+}
+.ytd-prop-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 4px 16px rgba(189,154,94,0.15); }
+.ytd-prop-card.rag-green-border { border-left-color:#2F6B4F; }
+.ytd-prop-card.rag-amber-border { border-left-color:#BD9A5E; }
+.ytd-prop-card.rag-red-border   { border-left-color:#B5562B; }
+.ytd-prop-card.no-data { opacity:0.55; border-left-color:#9E9E9E; }
+.ytd-pc-name { font-family:'Cormorant Garamond',Georgia,serif; font-size:15px; font-weight:600; color:var(--cream); margin-bottom:8px; }
+.ytd-pc-country { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--silver); margin-bottom:10px; }
+.ytd-pc-stats { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+.ytd-pc-stat { }
+.ytd-pc-stat .sv { font-size:18px; font-weight:700; color:var(--gold); line-height:1.1; }
+.ytd-pc-stat .sl { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--mist); }
+.ytd-pc-rag { display:flex; gap:10px; font-size:11px; color:var(--mist); }
+
+.ytd-month-chart { display:flex; align-items:flex-end; gap:3px; height:48px; margin:10px 0; }
+.ytd-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; }
+.ytd-bar { width:100%; border-radius:2px 2px 0 0; min-height:2px; transition:height 0.2s; }
+.ytd-bar-lbl { font-size:7px; color:var(--mist); margin-top:2px; white-space:nowrap; overflow:hidden; }
+
+.dept-rag-table { width:100%; border-collapse:collapse; font-size:13px; }
+.dept-rag-table th {
+  text-align:left; padding:7px 10px; font-size:9px; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--mist); border-bottom:1px solid var(--line); font-weight:600;
+}
+.dept-rag-table td { padding:8px 10px; border-bottom:1px solid var(--cream-dim); color:var(--text-dark); vertical-align:middle; }
+.dept-rag-table tr:last-child td { border-bottom:none; }
+.dept-rag-table tr:hover td { background:var(--cream-dim); }
+.dept-rag-table .dn { font-weight:600; color:var(--cream); }
+
+.cat-bar-row { display:grid; grid-template-columns:180px 1fr 60px; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--cream-dim); }
+.cat-bar-row:last-child { border-bottom:none; }
+.cat-bar-row .cl { font-size:12px; color:var(--cream); }
+.cat-bar-row .cv { text-align:right; font-size:12px; font-weight:700; color:var(--gold); }
+
+.submission-badge {
+  display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+  padding:3px 9px; border-radius:12px; margin-left:6px;
+}
+.sub-ok  { background:rgba(47,107,79,0.15); color:#2F6B4F; }
+.sub-mis { background:rgba(181,86,43,0.12); color:#B5562B; }
+
+.ytd-group-kpi { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+.ytd-gkpi { background:var(--navy-card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; text-align:center; }
+.ytd-gkpi .gv { font-size:28px; font-weight:700; color:var(--gold); line-height:1.1; }
+.ytd-gkpi .gl { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--mist); margin-top:4px; }
+
+.ytd-rag-row { display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+.ytd-rag-pill {
+  display:flex; align-items:center; gap:6px; background:var(--navy-card);
+  border:1px solid var(--line); border-radius:20px; padding:6px 14px; font-size:12px; color:var(--cream);
+}
+.ytd-rag-pill .rp-count { font-weight:700; font-size:16px; color:var(--gold); }
+
+@media (max-width:900px){
+  .ytd-prop-grid { grid-template-columns:repeat(2,1fr); }
+  .ytd-group-kpi { grid-template-columns:repeat(2,1fr); }
+  .cat-bar-row { grid-template-columns:120px 1fr 50px; }
+}
+@media (max-width:600px){
+  .ytd-prop-grid { grid-template-columns:1fr; }
+  .ytd-group-kpi { grid-template-columns:repeat(2,1fr); }
+  .cat-bar-row { grid-template-columns:1fr 40px; }
+  .cat-bar-row .bar-track { display:none; }
+  .dept-rag-table .hide-mobile { display:none; }
+}
+
 /* Insight callout */
 .insight-box {
   background: var(--gold-dim);
@@ -1127,10 +1206,11 @@ var PROPERTIES = [
 // STATE
 // ================================================================
 var STATE = {
-  view: "home",       // home | property | report | group
+  view: "home",       // home | property | report | group | ytd | ytd_property
   property: null,     // property object
   reportData: null,   // parsed CSV rows
   reportMeta: null,   // { label, url, propName }
+  ytdProp: null,      // selected property for YTD drill-down
 };
 
 var CACHE = {};
@@ -1445,8 +1525,11 @@ function renderTopbar(){
     '</div>'+
     '<div class="topbar-actions">'+
       (STATE.view==="group"
-        ? '<button class="btn btn-active" id="btnGroup">Group Overview</button>'
-        : '<button class="btn btn-ghost" id="btnGroup">Group Overview</button>')+
+        ? '<button class="btn btn-active btn-group-overview" id="btnGroup">Group Overview</button>'
+        : '<button class="btn btn-ghost btn-group-overview" id="btnGroup">Group Overview</button>')+
+      (STATE.view==="ytd"
+        ? '<button class="btn btn-active" id="btnYTD">YTD Training</button>'
+        : '<button class="btn btn-ghost" id="btnYTD">YTD Training</button>')+
     '</div>'+
   '</div>';
 }
@@ -1454,656 +1537,420 @@ function renderTopbar(){
 function wireTopbar(){
   var bg=document.getElementById("btnGroup");
   if(bg) bg.addEventListener("click",function(){ showGroup(); });
+  var by=document.getElementById("btnYTD");
+  if(by) by.addEventListener("click",function(){ showYTD(); });
+}
+// ================================================================
+// YTD TRACKER DASHBOARD — Dashboard 2
+// Reads a single consolidated CSV published from Group Overview sheet
+// ================================================================
+var YTD_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRIgjGVtyo9vDhlU9j2PcW65aEmV8em18MqDasRU-iY9enLzY1Eyyu5t9_BRI9LEGTXSL1z3BeTMiP-/pub?gid=0&single=true&output=csv';
+var YTD_DATA_CACHE = null;
+
+// Property code → full name + country
+var YTD_CODE_MAP = {
+  'ACL':  {name:'Arusha Coffee Lodge',         country:'Tanzania'},
+  'TTT':  {name:'Tarangire Treetops',           country:'Tanzania'},
+  'TMN':  {name:'The Manor',                    country:'Tanzania'},
+  'SPC':  {name:'Serengeti Pioneer Camp',       country:'Tanzania'},
+  'SMC':  {name:'Serengeti Migration Camp',     country:'Tanzania'},
+  'KLZ':  {name:'Kilindi Zanzibar',             country:'Tanzania'},
+  'SXR':  {name:'Serengeti Explorer',           country:'Tanzania'},
+  'NXR':  {name:'Ngorongoro Explorer',          country:'Tanzania'},
+  'TCA':  {name:'Tortilis Camp Amboseli',       country:'Kenya'},
+  'SRM':  {name:'Sand River Masai Mara',        country:'Kenya'},
+  'EPC':  {name:'Elephant Pepper Camp',         country:'Kenya'},
+  'LEPC': {name:'Little Elephant Pepper Camp',  country:'Kenya'},
+  'LTC':  {name:'Loisaba Tented Camp',          country:'Kenya'},
+  'LLS':  {name:'Loisaba Lodo Springs',         country:'Kenya'},
+  'LSB':  {name:'Loisaba Star Beds',            country:'Kenya'},
+  'LSC':  {name:'Lewa Safari Camp',             country:'Kenya'},
+  'KHL':  {name:'Kifaru House Lewa',            country:'Kenya'}
+};
+
+var MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Category labels shortened for display
+var CAT_SHORT = {
+  'On-the-Job Coaching': 'On-the-Job Coaching',
+  'SOP Training': 'SOP Training',
+  'Toolbox Talk': 'Toolbox Talk',
+  'Online (Lobster Ink)': 'Online (Lobster Ink)',
+  'Workshop / Formal Session': 'Workshop / Formal Session',
+  'Compliance Training OSHA/HACCP/Fire Safety/Sustainability': 'Compliance Training',
+  'Compliance Training OSHA/HACCP/Fire Safety/Sustainability ': 'Compliance Training'
+};
+
+// RAG helpers
+function ragColor(traj){
+  if(!traj) return '#9E9E9E';
+  if(traj.indexOf('On Track')>-1) return '#2F6B4F';
+  if(traj.indexOf('Needs Attention')>-1) return '#BD9A5E';
+  if(traj.indexOf('At Risk')>-1) return '#B5562B';
+  return '#9E9E9E';
+}
+function ragDot(traj){
+  return '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+ragColor(traj)+';margin-right:5px;vertical-align:middle;"></span>';
+}
+function ragLabel(traj){
+  if(!traj||traj==='') return '—';
+  if(traj.indexOf('On Track')>-1)       return '🟢 On Track';
+  if(traj.indexOf('Needs Attention')>-1) return '🟠 Needs Attention';
+  if(traj.indexOf('At Risk')>-1)        return '🔴 At Risk';
+  return traj;
 }
 
-// ================================================================
-// HOME VIEW
-// ================================================================
-function showHome(){
-  STATE.view="home";
-  // Show loading state while registry fetches
-  app.innerHTML = renderTopbar() +
+// Parse the consolidated Group Overview CSV
+// Structure per property block:
+//   Row header: col0=Property, col1=Month ... col17=Category, col18=Hrs
+//   Data rows:  col0=CODE, col1=date/month, col3=monthHrs, col8=ytdHrs, col11=tzTraj, col14=keTraj
+//               col17=CategoryName, col18=CategoryHrs (only on first 6 data rows)
+//   TOTAL row:  col0='', col1='TOTAL', col3=ytdHrs, col2=team
+function parseGroupOverviewCSV(rows){
+  var props = {};
+  var currentCode = null;
+  var VALID = YTD_CODE_MAP;
+
+  rows.forEach(function(r){
+    var c0 = (r[0]||'').toString().trim();
+    var c1 = (r[1]||'').toString().trim();
+    var c17 = (r[17]||'').toString().trim();
+    var c18 = (r[18]||'').toString().trim();
+
+    // Skip header rows
+    if(c0==='Property' && c1==='Month') return;
+    if(!c0 && !c1) return;
+
+    // Detect property code
+    if(VALID[c0] && c1!=='TOTAL'){
+      currentCode = c0;
+      if(!props[c0]){
+        props[c0] = {
+          code: c0,
+          name: VALID[c0].name,
+          country: VALID[c0].country,
+          months: [],
+          categories: [],
+          total: {}
+        };
+      }
+    }
+
+    if(!currentCode) return;
+
+    // TOTAL row (col0 empty, col1='TOTAL')
+    if(c1==='TOTAL' && !VALID[c0]){
+      // Only take the first TOTAL for each property
+      if(!props[currentCode].total.ytdHrs){
+        props[currentCode].total = {
+          teamMembers: parseFloat(r[2])||0,
+          ytdHrs:      parseFloat(r[3])||0,
+          avgHrs:      parseFloat(r[4])||0,
+          pctTo50:     parseFloat(r[5])||0
+        };
+      }
+      return;
+    }
+
+    // Data row for current property
+    if(VALID[c0] && c1 && c1!=='TOTAL'){
+      // Parse month name from date string or text
+      var monthLabel = c1;
+      if(c1.match(/^\d{4}-\d{2}/)){
+        var mIdx = parseInt(c1.substring(5,7),10)-1;
+        monthLabel = MONTH_NAMES[mIdx]||c1;
+      } else if(c1.match(/^\d+(\.\d+)?$/)){
+        // Excel serial date
+        var d = new Date(Math.round((parseFloat(c1)-25569)*86400*1000));
+        monthLabel = MONTH_NAMES[d.getUTCMonth()]||c1;
+      } else {
+        // "January 2026" → "Jan"
+        var parts = c1.split(' ');
+        monthLabel = parts[0]?parts[0].substring(0,3):c1;
+      }
+
+      props[currentCode].months.push({
+        month:       monthLabel,
+        teamMembers: parseFloat(r[2])||0,
+        totalHrs:    parseFloat(r[3])||0,
+        avgHrs:      parseFloat(r[4])||0,
+        pctTo50:     parseFloat(r[5])||0,
+        subDate:     (r[6]||'').toString().trim(),
+        evidenceOk:  (r[7]||'').toString().trim(),
+        ytdHrs:      parseFloat(r[8])||0,
+        tzTraj:      (r[11]||'').toString().trim(),
+        keTraj:      (r[14]||'').toString().trim()
+      });
+
+      // Category inline on same row (cols 17+18)
+      if(c17 && c17!=='Category' && c17!=='YTD'){
+        var catName = CAT_SHORT[c17]||c17;
+        var catHrs  = parseFloat(c18)||0;
+        if(catHrs>0) props[currentCode].categories.push({cat:catName, hrs:catHrs});
+      }
+    }
+  });
+
+  return Object.values(props);
+}
+
+function mostRecentActiveMonth(months){
+  for(var i=months.length-1;i>=0;i--){
+    if(months[i].totalHrs>0) return months[i];
+  }
+  return months[0]||null;
+}
+
+// ── Main YTD view ──────────────────────────────────────────────────────────
+function showYTD(){
+  STATE.view='ytd';
+  app.innerHTML = renderTopbar()+
     '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
     '<div class="spinner" style="margin:0 auto 16px;"></div>'+
-    '<p style="color:var(--mist);font-size:14px;">Loading report registry…</p></div>';
+    '<p style="color:var(--mist);font-size:14px;">Loading YTD tracker data…</p></div>';
   wireTopbar();
-  loadRegistry(function(){
-    mergeLocalOverrides();
-    // Pre-fetch all reports to populate MULTI_PROP_CACHE before rendering home
-    var allRpts = allLoadedReports();
-    if(allRpts.length === 0){ _renderHome(); return; }
-    var pending = allRpts.length;
-    allRpts.forEach(function(item){
-      fetchCSV(item.url, function(err, rows){
-        if(!err){
-          var rep = extractReport(rows);
-          rep.property = rep.property || item.property;
-          cacheMultiProps(item.url, rep);
-        }
-        pending--;
-        if(pending === 0) _renderHome();
-      });
-    });
+
+  if(!YTD_CSV_URL){
+    renderYTDNoCsv();
+    return;
+  }
+
+  if(YTD_DATA_CACHE){
+    renderYTDHome(YTD_DATA_CACHE);
+    return;
+  }
+
+  fetchCSV(YTD_CSV_URL, function(err, rows){
+    if(err||!rows){
+      renderYTDNoCsv();
+      return;
+    }
+    YTD_DATA_CACHE = parseGroupOverviewCSV(rows);
+    renderYTDHome(YTD_DATA_CACHE);
   });
 }
 
-function _renderHome(){
-  var tz = PROPERTIES.filter(function(p){return p.country==="Tanzania";});
-  var ke = PROPERTIES.filter(function(p){return p.country==="Kenya";});
+function renderYTDNoCsv(){
+  STATE.view='ytd';
+  app.innerHTML=renderTopbar()+
+    '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
+    '<div style="font-size:40px;margin-bottom:16px;">📊</div>'+
+    '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;color:var(--cream);margin-bottom:10px;">YTD Tracker not configured</div>'+
+    '<div style="font-size:13px;color:var(--mist);max-width:480px;margin:0 auto;">'+
+    'Set the <code style="background:rgba(0,0,0,0.2);padding:2px 6px;border-radius:3px;">YTD_CSV_URL</code> variable in the dashboard HTML to the published CSV link from your Group Overview Google Sheet.</div>'+
+    '</div>';
+  wireTopbar();
+}
 
-  // Count multi-property reports
-  var multiReports = [];
-  Object.keys(MULTI_PROP_CACHE).forEach(function(url){
-    var allProps = MULTI_PROP_CACHE[url];
-    // find label
-    var label = '';
-    Object.keys(REGISTRY).forEach(function(p){
-      (REGISTRY[p]||[]).forEach(function(r){if(r.url===url) label=r.label;});
-    });
-    multiReports.push({url:url, label:label, props:allProps});
+function renderYTDHome(props){
+  STATE.view='ytd';
+
+  // Group-level aggregates
+  var totalTeam=0, totalYTDHrs=0, greenCount=0, amberCount=0, redCount=0;
+  props.forEach(function(p){
+    totalTeam   += p.total.teamMembers||0;
+    totalYTDHrs += p.total.ytdHrs||0;
+    var m = mostRecentActiveMonth(p.months);
+    if(!m) return;
+    var traj = p.country==='Kenya' ? m.keTraj : m.tzTraj;
+    if(traj.indexOf('On Track')>-1)       greenCount++;
+    else if(traj.indexOf('Needs Attention')>-1) amberCount++;
+    else redCount++;
   });
-
-  var propCards = function(arr){
-    return arr.map(function(p){
-      var rpts = getReports(p.name);
-      var direct = (REGISTRY[p.name]||[]).length;
-      var cross = rpts.length - direct;
-      var n = rpts.length;
-      return '<div class="prop-card" data-prop="'+esc(p.name)+'">'+
-        '<div class="prop-code">'+esc(p.code)+'</div>'+
-        '<div class="prop-name">'+esc(p.name)+'</div>'+
-        '<div class="prop-count '+(n===0?"zero":"")+'">'+
-          (n===0 ? "No reports" :
-           direct+" report"+(direct===1?"":"s")+(cross>0?" + "+cross+" shared":"")+
-          "")+
-        '</div>'+
-      '</div>';
-    }).join("");
-  };
-
-  var multiSection = multiReports.length ?
-    '<div class="section-label" style="margin-top:32px;">Multi-Property Sessions</div>'+
-    '<div class="report-list" style="margin-bottom:32px;">'+
-      multiReports.map(function(item){
-        return '<div class="report-card" data-url="'+esc(item.url)+'" data-multi="1">'+
-          '<div>'+
-            '<div class="rc-label">✦ '+esc(item.label)+'</div>'+
-            '<div class="rc-meta">'+item.props.map(esc).join(' · ')+'</div>'+
-          '</div>'+
-          '<span class="rc-arrow">›</span>'+
-        '</div>';
-      }).join("")+
-    '</div>' : '';
+  var avgPerPerson = totalTeam>0?(totalYTDHrs/totalTeam).toFixed(1):'0';
+  var pctTarget    = totalTeam>0?Math.round(totalYTDHrs/(totalTeam*50)*100):0;
 
   var html = renderTopbar()+
-    '<div class="section-wrap" style="padding-top:40px;">'+
-      '<div class="hero">'+
-        '<h1>Training Report <span>Dashboard</span></h1>'+
-        '<p>Select a property to view its training reports, or open the Group Overview for a cross-property summary.</p>'+
+    '<div class="group-banner">'+
+      '<div>'+
+        '<h2 style="margin-top:8px;color:#F7F6F3;">YTD On-Site Training Tracker</h2>'+
+        '<div class="gb-meta">Day-to-day &amp; on-site property training · 50-hour annual target per team member · '+props.length+' properties</div>'+
       '</div>'+
-      multiSection+
-      '<div class="section-label">Tanzania Properties</div>'+
-      '<div class="prop-grid" style="margin-bottom:32px;">'+propCards(tz)+'</div>'+
-      '<div class="section-label">Kenya Properties</div>'+
-      '<div class="prop-grid">'+propCards(ke)+'</div>'+
+    '</div>'+
+    '<div class="section-wrap">'+
+
+    // Group KPIs
+    '<div class="kpi-row kpi-row-4" style="margin-bottom:12px;">'+
+      kpiCard(Math.round(totalYTDHrs).toLocaleString()+' hrs','Total YTD Hours Logged','gold')+
+      kpiCard(Math.round(totalTeam),'Total Team Members','forest')+
+      kpiCard(avgPerPerson+' hrs','Avg Hours / Person YTD','gold')+
+      kpiCard(pctTarget+'%','Group Progress to 50hr Target','forest')+
+    '</div>'+
+
+    // RAG pills
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">'+
+      '<div style="display:flex;align-items:center;gap:8px;background:var(--navy-card);border:1px solid var(--line);border-radius:20px;padding:7px 16px;font-size:13px;">'+
+        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#2F6B4F;"></span>'+
+        '<span style="font-size:20px;font-weight:700;color:var(--gold);">'+greenCount+'</span> On Track</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;background:var(--navy-card);border:1px solid var(--line);border-radius:20px;padding:7px 16px;font-size:13px;">'+
+        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#BD9A5E;"></span>'+
+        '<span style="font-size:20px;font-weight:700;color:var(--gold);">'+amberCount+'</span> Needs Attention</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;background:var(--navy-card);border:1px solid var(--line);border-radius:20px;padding:7px 16px;font-size:13px;">'+
+        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#B5562B;"></span>'+
+        '<span style="font-size:20px;font-weight:700;color:var(--gold);">'+redCount+'</span> At Risk</div>'+
+    '</div>'+
+
+    '<div class="section-label" style="margin-bottom:16px;">Properties — Click to view monthly breakdown</div>'+
+
+    // Property cards
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:32px;">'+
+    props.slice().sort(function(a,b){ return a.country===b.country?a.name.localeCompare(b.name):a.country.localeCompare(b.country); })
+    .map(function(p){
+      var tot = p.total;
+      var ytdHrs = tot.ytdHrs||0;
+      var team   = tot.teamMembers||0;
+      var avg    = team>0?(ytdHrs/team).toFixed(1):'0';
+      var pct    = team>0?Math.round(ytdHrs/(team*50)*100):0;
+      var m = mostRecentActiveMonth(p.months);
+      var traj = m?(p.country==='Kenya'?m.keTraj:m.tzTraj):'';
+      var borderCol = ragColor(traj);
+
+      // Mini sparkline
+      var maxHrs = 0;
+      p.months.forEach(function(mo){ if(mo.totalHrs>maxHrs) maxHrs=mo.totalHrs; });
+      var bars = p.months.map(function(mo,idx){
+        var h = maxHrs>0?Math.round((mo.totalHrs/maxHrs)*40):0;
+        var col = mo.totalHrs>0?'var(--gold)':'var(--grey-border)';
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">'+
+          '<div style="width:100%;border-radius:2px 2px 0 0;min-height:2px;height:'+(h||2)+'px;background:'+col+';"></div>'+
+          '<div style="font-size:7px;color:var(--mist);margin-top:2px;">'+mo.month.charAt(0)+'</div>'+
+        '</div>';
+      }).join('');
+
+      return '<div style="background:var(--navy-card);border:1px solid var(--line);border-left:4px solid '+borderCol+';border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all 0.2s;" '+
+        'class="ytd-pcard" data-ytdcode="'+esc(p.code)+'">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'+
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:15px;font-weight:600;color:var(--cream);">'+esc(p.name)+'</div>'+
+          '<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--silver);white-space:nowrap;margin-left:8px;">'+esc(p.country)+'</div>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0;">'+
+          '<div><div style="font-size:18px;font-weight:700;color:var(--gold);line-height:1.1;">'+Math.round(ytdHrs).toLocaleString()+'h</div><div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">YTD Hours</div></div>'+
+          '<div><div style="font-size:18px;font-weight:700;color:var(--gold);line-height:1.1;">'+avg+'h</div><div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">Avg/Person</div></div>'+
+          '<div><div style="font-size:18px;font-weight:700;color:var(--gold);line-height:1.1;">'+pct+'%</div><div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">To 50hr Target</div></div>'+
+        '</div>'+
+        '<div style="display:flex;align-items:flex-end;gap:2px;height:46px;margin-bottom:8px;">'+bars+'</div>'+
+        '<div style="font-size:11px;color:var(--mist);">'+ragDot(traj)+ragLabel(traj)+'</div>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
     '</div>';
 
   app.innerHTML = html;
   wireTopbar();
-  document.querySelectorAll(".prop-card").forEach(function(el){
-    el.addEventListener("click", function(){
-      var prop = PROPERTIES.find(function(p){return p.name===el.getAttribute("data-prop");});
-      if(prop) showPropertyReports(prop);
-    });
-  });
-  // Wire multi-property report cards
-  document.querySelectorAll(".report-card[data-multi]").forEach(function(el){
-    el.addEventListener("click",function(){
-      var url = el.getAttribute("data-url");
-      var label = el.querySelector(".rc-label").textContent.replace("✦ ","");
-      loadAndShowReport(url,{label:label, url:url, propName:"Multi-Property Session"});
+  document.querySelectorAll('.ytd-pcard').forEach(function(card){
+    card.addEventListener('click', function(){
+      var code = this.getAttribute('data-ytdcode');
+      var prop = props.find(function(p){ return p.code===code; });
+      if(prop) renderYTDProperty(prop);
     });
   });
 }
 
-// ================================================================
-// PROPERTY REPORT LIST
-// ================================================================
-function showPropertyReports(prop){
-  STATE.view="property";
-  STATE.property=prop;
-  loadRegistry(function(){
-    mergeLocalOverrides();
-    _renderPropertyReports(prop);
-  });
-}
-function _renderPropertyReports(prop){
-  var reports = getReports(prop.name);
-  var listHtml;
-  if(reports.length===0){
-    listHtml='<div class="empty-state">'+
-      '<div class="empty-icon">📋</div>'+
-      '<p>No training reports have been loaded for <strong>'+esc(prop.name)+'</strong> yet.<br>'+
-      'An L&amp;D administrator can add reports via the Admin panel.</p>'+
+function renderYTDProperty(p){
+  STATE.view='ytd_property';
+  var tot = p.total;
+  var ytdHrs = tot.ytdHrs||0;
+  var team   = tot.teamMembers||0;
+  var avg    = team>0?(ytdHrs/team).toFixed(1):'0';
+  var pct    = team>0?Math.round(ytdHrs/(team*50)*100):0;
+  var isKenya = p.country==='Kenya';
+
+  // Latest month with data
+  var latestM = mostRecentActiveMonth(p.months);
+  var tzTraj  = latestM?latestM.tzTraj:'';
+  var keTraj  = latestM?latestM.keTraj:'';
+
+  // Monthly trend bars
+  var maxHrs = 0;
+  p.months.forEach(function(mo){ if(mo.totalHrs>maxHrs) maxHrs=mo.totalHrs; });
+  var trendRows = p.months.map(function(mo){
+    var barW = maxHrs>0?Math.round((mo.totalHrs/maxHrs)*100):0;
+    var traj = isKenya?mo.keTraj:mo.tzTraj;
+    var subOk = (mo.evidenceOk||'').toLowerCase()==='yes';
+    var hasSub = mo.subDate&&mo.subDate!=='';
+    return '<div style="display:grid;grid-template-columns:46px 1fr 64px 80px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream-dim);">'+
+      '<div style="font-size:13px;color:var(--cream);font-weight:500;">'+esc(mo.month)+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+barW+'%;background:'+ragColor(traj)+'"></div></div>'+
+      '<div style="text-align:right;font-size:13px;font-weight:700;color:var(--gold);">'+mo.totalHrs.toFixed(1)+'h</div>'+
+      '<div style="text-align:right;font-size:11px;">'+
+        (hasSub?'<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:'+(subOk?'rgba(47,107,79,0.15)':'rgba(181,86,43,0.12)')+';color:'+(subOk?'#2F6B4F':'#B5562B')+';">'+(subOk?'✓ Done':'⚠ Pending')+'</span>':'<span style="font-size:10px;color:var(--mist);">—</span>')+
+      '</div>'+
     '</div>';
-  } else {
-    listHtml='<div class="report-list">'+
-      reports.map(function(r,i){
-        return '<div class="report-card" data-idx="'+i+'" data-url="'+esc(r.url)+'">'+
-          '<div>'+
-            '<div class="rc-label">'+esc(r.label)+'</div>'+
-            '<div class="rc-meta">'+esc(prop.name)+'</div>'+
-          '</div>'+
-          '<span class="rc-arrow">›</span>'+
-        '</div>';
-      }).join("")+
+  }).join('');
+
+  // Category breakdown
+  var totalCatHrs = 0;
+  p.categories.forEach(function(c){ totalCatHrs+=c.hrs; });
+  var catRows = p.categories.filter(function(c){ return c.hrs>0; }).map(function(c){
+    var f = totalCatHrs>0?c.hrs/totalCatHrs:0;
+    return '<div style="display:grid;grid-template-columns:1fr 160px 64px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--cream-dim);">'+
+      '<div style="font-size:13px;color:var(--cream);">'+esc(c.cat)+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:var(--gold);"></div></div>'+
+      '<div style="text-align:right;font-size:13px;font-weight:700;color:var(--gold);">'+c.hrs.toFixed(1)+'h</div>'+
     '</div>';
-  }
+  }).join('');
 
   var html = renderTopbar()+
-    '<div class="section-wrap" style="padding-top:32px;">'+
-      '<div class="back-row">'+
-        '<button class="back-btn" id="btnBack">← All Properties</button>'+
-        '<span class="prop-title">'+esc(prop.name)+'</span>'+
-      '</div>'+
-      '<div class="section-label">Training Reports</div>'+
-      listHtml+
-    '</div>';
-
-  app.innerHTML=html;
-  wireTopbar();
-  document.getElementById("btnBack").addEventListener("click",showHome);
-  document.querySelectorAll(".report-card").forEach(function(el){
-    el.addEventListener("click",function(){
-      var url=el.getAttribute("data-url");
-      var idx=parseInt(el.getAttribute("data-idx"),10);
-      var label=reports[idx].label;
-      loadAndShowReport(url,{label:label,url:url,propName:prop.name});
-    });
-  });
-}
-
-// ================================================================
-// SINGLE REPORT VIEW
-// ================================================================
-function loadAndShowReport(url, meta){
-  STATE.view="report";
-  STATE.reportMeta=meta;
-
-  // Show loading
-  app.innerHTML=renderTopbar()+
-    '<div class="section-wrap" style="padding-top:32px;">'+
-      '<div class="back-row">'+
-        '<button class="back-btn" id="btnBack2">← '+esc(meta.propName)+'</button>'+
-      '</div>'+
-      '<div class="loading-state"><div class="spinner"></div><p>Loading report…</p></div>'+
-    '</div>';
-  wireTopbar();
-  document.getElementById("btnBack2").addEventListener("click",function(){
-    var prop=PROPERTIES.find(function(p){return p.name===meta.propName;});
-    if(prop) showPropertyReports(prop);
-  });
-
-  fetchCSV(url, function(err, rows){
-    if(err){
-      app.innerHTML=renderTopbar()+
-        '<div class="section-wrap" style="padding-top:32px;">'+
-          '<div class="back-row"><button class="back-btn" id="btnBack3">← '+esc(meta.propName)+'</button></div>'+
-          '<div class="err-box">Could not load this report. Please check the link is published and try again.</div>'+
-        '</div>';
-      wireTopbar();
-      document.getElementById("btnBack3").addEventListener("click",function(){
-        var prop=PROPERTIES.find(function(p){return p.name===meta.propName;});
-        if(prop) showPropertyReports(prop);
-      });
-      return;
-    }
-    renderReport(rows, meta);
-  });
-}
-
-function renderReport(rows, meta){
-  var rep=extractReport(rows);
-  // Cache multi-property info so other properties can find this report
-  cacheMultiProps(meta.url, rep);
-  var qSorted=rep.questions.slice().sort(function(a,b){return b.score-a.score;});
-  var hi=qSorted[0], lo=qSorted[qSorted.length-1];
-  var isMulti = rep.propsRepresented && rep.propsRepresented.length > 0;
-
-  var html=renderTopbar()+
     '<div class="report-header">'+
-      '<div class="rh-prop">'+esc(rep.property||meta.propName)+'</div>'+
-      '<div class="rh-title">'+esc(rep.programme||meta.label)+'</div>'+
-      '<div class="rh-meta">'+esc(rep.monthYear)+(rep.reportDate?' &nbsp;·&nbsp; Report date: '+esc(rep.reportDate):'')+(rep.trainer?' &nbsp;·&nbsp; '+esc(rep.trainer):'')+'</div>'+
+      '<button class="back-btn" id="btnBackYTD" style="margin-bottom:12px;">← YTD Training Overview</button>'+
+      '<h2 class="rh-title">'+esc(p.name)+'</h2>'+
+      '<div class="rh-meta" style="margin-top:4px;">'+esc(p.country)+' · On-Site Training YTD · 50-hour annual target per team member</div>'+
     '</div>'+
     '<div class="section-wrap">'+
-      '<button class="back-btn" id="btnBackRpt" style="margin-bottom:24px;">← '+esc(meta.propName)+' Reports</button>'+
 
-      // Multi-property badge
-      (isMulti ?
-        '<div class="multi-badge">✦ Multi-Property Session</div>'+
-        '<div class="multi-props">'+
-          '<div class="prop-chip host">⌂ '+esc(rep.property||meta.propName)+' (host)</div>'+
-          rep.propsRepresented.map(function(p){
-            return '<div class="prop-chip">'+esc(p)+'</div>';
-          }).join('')+
-        '</div>' : '')+
+    // KPIs
+    '<div class="kpi-row kpi-row-4" style="margin-bottom:12px;">'+
+      kpiCard(Math.round(ytdHrs).toLocaleString()+' hrs','YTD Hours Logged','gold')+
+      kpiCard(avg+' hrs','Avg Hours / Person YTD','forest')+
+      kpiCard(pct+'%','Progress to 50hr Target','gold')+
+      kpiCard(Math.round(team),'Team Members','forest')+
+    '</div>'+
 
-      // KPIs row 1
-      '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
-        kpiCard(pct(rep.overallSat),"Overall Satisfaction","gold")+
-        kpiCard(rep.participants,"Participants","forest")+
-        kpiCard(rep.trainingDays+" days","Training Days","forest")+
-        kpiCard(rep.deptsCovered,"Departments","gold")+
+    // RAG status
+    '<div class="kpi-row kpi-row-2" style="margin-bottom:24px;">'+
+      '<div class="kpi-card kpi-card-forest" style="text-align:center;">'+
+        '<div class="kv" style="font-size:16px;">'+ragDot(tzTraj)+ragLabel(tzTraj)+'</div>'+
+        '<div class="kl">Tanzania Trajectory</div>'+
       '</div>'+
-      // KPIs row 2
-      '<div class="kpi-row kpi-row-2" style="margin-bottom:16px;">'+
-        kpiCard(rep.sessionHours.toFixed(1)+" hrs","Session Hours","forest")+
-        kpiCard(rep.totalIndivHours.toFixed(1)+" hrs","Total Individual Hours Logged","gold")+
+      '<div class="kpi-card kpi-card-gold" style="text-align:center;">'+
+        '<div class="kv" style="font-size:16px;">'+ragDot(keTraj)+ragLabel(keTraj)+'</div>'+
+        '<div class="kl">Kenya Trajectory</div>'+
       '</div>'+
+    '</div>'+
 
-      // Tags
-      (rep.trainingCategory||rep.division ?
-        '<div class="tag-row">'+
-          (rep.trainingCategory?'<div class="tag-pill"><div class="tl">Training Category</div><div class="tv">'+esc(rep.trainingCategory)+'</div></div>':'')+
-          (rep.division?'<div class="tag-pill"><div class="tl">Division</div><div class="tv">'+esc(rep.division)+'</div></div>':'')+
-        '</div>' : '')+
+    // Monthly trend
+    '<div class="rpt-section">'+
+      '<div class="rpt-section-title">Monthly Training Hours</div>'+
+      '<div style="display:grid;grid-template-columns:46px 1fr 64px 80px;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);">'+
+        '<div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">Month</div>'+
+        '<div></div>'+
+        '<div style="text-align:right;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">Hours</div>'+
+        '<div style="text-align:right;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">Submission</div>'+
+      '</div>'+
+      trendRows+
+    '</div>'+
 
-      // Satisfaction
+    // Category breakdown
+    (catRows?
       '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Satisfaction by Evaluation Question (Q1–Q13)</div>'+
-        '<div class="score-table">'+
-          qSorted.map(function(q){
-            var col=tierColor(q.score);
-            return '<div class="score-row">'+
-              '<div class="sq">'+esc(q.qnum)+' — '+esc(q.label)+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(q.score*100)+'%;background:'+col+';"></div></div>'+
-              '<div class="sp" style="color:'+col+'">'+pct(q.score)+'</div>'+
-            '</div>';
-          }).join("")+
+        '<div class="rpt-section-title">Training Category Breakdown — YTD</div>'+
+        catRows+
+        '<div style="display:grid;grid-template-columns:1fr 160px 64px;gap:12px;padding:8px 0;border-top:1px solid var(--gold);margin-top:4px;">'+
+          '<div style="font-size:13px;font-weight:700;color:var(--cream);">Total</div>'+
+          '<div></div>'+
+          '<div style="text-align:right;font-size:13px;font-weight:700;color:var(--gold-light);">'+totalCatHrs.toFixed(1)+'h</div>'+
         '</div>'+
-        '<div class="legend-row">'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#4A8C65"></div>Excellent (97%+)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#BD9A5E"></div>Strong (92–96%)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#B5562B"></div>Needs attention (&lt;92%)</div>'+
-        '</div>'+
-        (hi&&lo?'<div class="insight-box">Highest-rated: <strong>'+esc(hi.label)+'</strong> ('+pct(hi.score)+'). Area to watch: <strong>'+esc(lo.label)+'</strong> ('+pct(lo.score)+').</div>':'')+
-      '</div>'+
+      '</div>'
+    : '')+
 
-      // Departments
-      (rep.depts.length?
-        '<div class="rpt-section">'+
-          '<div class="rpt-section-title">Departmental Status</div>'+
-          '<div class="dept-grid">'+
-            rep.depts.map(function(d){
-              var cls=statusCls(d.status);
-              return '<div class="dept-card '+cls+'">'+
-                '<div class="dc-name">'+esc(d.name)+'</div>'+
-                '<div class="dc-contact">'+esc(d.contacts||"—")+'</div>'+
-                '<div class="status-badge '+cls+'">'+esc(d.status)+'</div>'+
-                '<div class="dc-notes">'+esc(d.notes)+'</div>'+
-              '</div>';
-            }).join("")+
-          '</div>'+
-        '</div>' : "")+
-
-      // Topics
-      (rep.topics.length?
-        '<div class="rpt-section">'+
-          '<div class="rpt-section-title">Training Content Covered</div>'+
-          '<ul class="topic-list">'+rep.topics.map(function(t){
-            var label = t.label || t;
-            var link = t.link || '';
-            return '<li>'+(link
-              ? '<a href="'+esc(link)+'" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-weight:600;">'+esc(label)+' <span style="font-size:11px;">↗</span></a>'
-              : esc(label))+'</li>';
-          }).join('')+'</ul>'+
-        '</div>' : "")+
-
-      // Qualitative feedback
-      (rep.quals.length?
-        '<div class="rpt-section">'+
-          '<div class="rpt-section-title">Qualitative Feedback Summary</div>'+
-          '<div class="qual-grid">'+
-            rep.quals.map(function(q){
-              return '<div class="qual-card">'+
-                '<div class="qc-title">'+esc(q.title)+'</div>'+
-                '<ul>'+q.points.map(function(p){return'<li>'+esc(p)+'</li>';}).join("")+'</ul>'+
-              '</div>';
-            }).join("")+
-          '</div>'+
-        '</div>' : "")+
-
-      // Individual hours
-      (rep.hours.length?
-        '<div class="rpt-section">'+
-          '<div class="rpt-section-title">Individual Training Hours</div>'+
-          '<table class="hours-table">'+
-            '<thead><tr><th>Participant</th><th>Department</th><th class="num">Hours</th></tr></thead>'+
-            '<tbody>'+
-              rep.hours.map(function(h){
-                return '<tr><td>'+esc(h.name)+'</td><td>'+esc(h.dept)+'</td><td class="num">'+h.hours.toFixed(1)+'</td></tr>';
-              }).join("")+
-              '<tr class="total-row"><td colspan="2"><strong>Total Hours Logged</strong></td><td class="num">'+rep.totalIndivHours.toFixed(1)+'</td></tr>'+
-            '</tbody>'+
-          '</table>'+
-        '</div>' : "")+
-
-      // Supporting documents
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Supporting Documents &amp; Records</div>'+
-        '<div class="docs-list">'+
-          (rep.docs.length ?
-            rep.docs.map(function(d){
-              return '<div class="doc-row">'+
-                '<div class="dr-label">'+esc(d.label)+'</div>'+
-                (d.link
-                  ? '<a href="'+esc(d.link)+'" target="_blank" rel="noopener">Open ↗</a>'
-                  : '<span class="no-link">Not uploaded yet</span>')+
-              '</div>';
-            }).join("") :
-            '<div class="doc-row"><span class="no-link">No documents linked in this report.</span></div>')+
-        '</div>'+
-      '</div>'+
-
-    '</div>'; // section-wrap
-
-  app.innerHTML=html;
-  wireTopbar();
-  document.getElementById("btnBackRpt").addEventListener("click",function(){
-    if(meta.propName==="Multi-Property Session"){
-      showHome();
-    } else {
-      var prop=PROPERTIES.find(function(p){return p.name===meta.propName;});
-      if(prop) showPropertyReports(prop);
-    }
-  });
-}
-
-function kpiCard(val, label, style){
-  return '<div class="kpi-card '+(style==="forest"?"forest":"")+'">'+
-    '<div class="kv">'+val+'</div>'+
-    '<div class="kl">'+label+'</div>'+
-  '</div>';
-}
-
-// ================================================================
-// GROUP OVERVIEW
-// ================================================================
-function showGroup(){
-  STATE.view="group";
-  app.innerHTML = renderTopbar() +
-    '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
-    '<div class="spinner" style="margin:0 auto 16px;"></div>'+
-    '<p style="color:var(--mist);font-size:14px;">Loading registry and reports…</p></div>';
-  wireTopbar();
-  loadRegistry(function(){
-    mergeLocalOverrides();
-    _doShowGroup();
-  });
-}
-
-function _doShowGroup(){
-  var allRpts=allLoadedReports();
-
-  if(allRpts.length===0){
-    app.innerHTML=renderTopbar()+
-      '<div class="section-wrap" style="padding-top:40px;">'+
-        '<div class="group-banner"><div>'+
-          '<button class="back-btn" id="btnBackGroup0">← All Properties</button>'+
-          '<h2 style="margin-top:8px;">Group Training Overview</h2>'+
-          '<div class="gb-meta">No reports loaded yet.</div>'+
-        '</div></div>'+
-        '<div class="empty-state"><div class="empty-icon">📊</div><p>No reports have been added yet. Use the Admin panel to add published report links.</p></div>'+
-      '</div>';
-    wireTopbar();
-    var b0=document.getElementById("btnBackGroup0");
-    if(b0) b0.addEventListener("click", showHome);
-    return;
-  }
-
-  // Show loading then fetch all
-  app.innerHTML=renderTopbar()+
-    '<div class="section-wrap" style="padding-top:40px;">'+
-      '<div class="loading-state"><div class="spinner"></div><p>Loading '+allRpts.length+' reports…</p></div>'+
     '</div>';
-  wireTopbar();
 
-  var loaded=[], pending=allRpts.length;
-  allRpts.forEach(function(item){
-    fetchCSV(item.url, function(err, rows){
-      if(!err) loaded.push({meta:item, rep:extractReport(rows)});
-      pending--;
-      if(pending===0) renderGroup(loaded, allRpts);
-    });
+  app.innerHTML = html;
+  wireTopbar();
+  document.getElementById('btnBackYTD').addEventListener('click', function(){
+    renderYTDHome(YTD_DATA_CACHE);
   });
 }
-
-function renderGroup(loaded, allRpts){
-  var totalSat=0, totalPax=0, totalSessionHrs=0, totalIndivHrs=0;
-  var qTotals={}, deptCounts={'good':0,'mid-col':0,'low-col':0};
-  var catHrs={}, divHrs={};
-  var propsCovered={};
-  var trainers={}, reportMonths={};
-
-  loaded.forEach(function(item){
-    var rep=item.rep;
-    propsCovered[rep.property||item.meta.property]=true;
-    totalSat+=rep.overallSat;
-    totalPax+=(rep.participants||0);
-    totalSessionHrs+=(rep.sessionHours||0);
-    totalIndivHrs+=(rep.totalIndivHours||0);
-    if(rep.trainingCategory) catHrs[rep.trainingCategory]=(catHrs[rep.trainingCategory]||0)+(rep.totalIndivHours||0);
-    if(rep.division) divHrs[rep.division]=(divHrs[rep.division]||0)+(rep.totalIndivHours||0);
-    // Trainer utilisation
-    if(rep.trainer){ rep.trainer.split(/[,;&]+/).forEach(function(t){ var tn=t.trim(); if(tn) trainers[tn]=true; }); }
-    // Report cadence by month
-    var m=rep.monthYear||rep.reportDate||'';
-    if(m){ var mk=m.substring(0,10); reportMonths[mk]=(reportMonths[mk]||0)+1; }
-    rep.questions.forEach(function(q){
-      if(!qTotals[q.qnum]) qTotals[q.qnum]={label:q.label,sum:0,count:0};
-      qTotals[q.qnum].sum+=q.score; qTotals[q.qnum].count+=1;
-    });
-    rep.depts.forEach(function(d){
-      var cls=statusCls(d.status);
-      deptCounts[cls]=(deptCounts[cls]||0)+1;
-    });
-  });
-
-  var avgSat=loaded.length?totalSat/loaded.length:0;
-  var avgHrsPerPax=totalPax?totalIndivHrs/totalPax:0;
-  var avgTrainingDays=loaded.length?(loaded.reduce(function(s,i){return s+(i.rep.trainingDays||0);},0)/loaded.length):0;
-  var propsWithTraining=Object.keys(propsCovered).length;
-  var propsWithout=PROPERTIES.length-propsWithTraining;
-  var totalDepts=(deptCounts['good']||0)+(deptCounts['mid-col']||0)+(deptCounts['low-col']||0);
-  var deptOnTrackPct=totalDepts?Math.round((deptCounts['good']||0)/totalDepts*100):0;
-  var uniqueTrainers=Object.keys(trainers).length;
-  var uniqueMonths=Object.keys(reportMonths).length;
-  var reportsPerMonth=uniqueMonths?loaded.length/uniqueMonths:loaded.length;
-
-  var qArr=Object.keys(qTotals).map(function(k){ var t=qTotals[k]; return{qnum:k,label:t.label,score:t.sum/t.count}; }).sort(function(a,b){return b.score-a.score;});
-  var catArr=Object.keys(catHrs).sort(function(a,b){return catHrs[b]-catHrs[a];});
-  var divArr=Object.keys(divHrs).sort(function(a,b){return divHrs[b]-divHrs[a];});
-
-  // Properties with zero training
-  var zeroProps=PROPERTIES.filter(function(p){return !propsCovered[p.name];});
-
-  var html=renderTopbar()+
-    '<div class="group-banner">'+
-      '<div>'+
-        '<button class="back-btn" id="btnBackGroup">← All Properties</button>'+
-        '<h2 style="margin-top:8px;">Group Training Overview</h2>'+
-        '<div class="gb-meta">'+loaded.length+' report'+(loaded.length===1?"":"s")+' across '+propsWithTraining+' of '+PROPERTIES.length+' properties</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="section-wrap">'+
-
-    // ── ROW 1: Core reach metrics ──
-    '<div class="rpt-section-title" style="margin-bottom:10px;">Reach &amp; Volume</div>'+
-    '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
-      kpiCard(pct(avgSat),"Group Avg Satisfaction","gold")+
-      kpiCard(totalPax,"Total Participants Trained","gold")+
-      kpiCard(propsWithTraining+"/"+PROPERTIES.length,"Properties Active","forest")+
-      kpiCard(loaded.length,"Training Reports","forest")+
-    '</div>'+
-    '<div class="kpi-row kpi-row-3" style="margin-bottom:10px;">'+
-      kpiCard(totalIndivHrs.toFixed(0)+" hrs","Total Individual Hours Logged","gold")+
-      kpiCard(totalSessionHrs.toFixed(1)+" hrs","Total Session Hours Delivered","forest")+
-      kpiCard(avgHrsPerPax.toFixed(1)+" hrs","Avg Hours per Participant","gold")+
-    '</div>'+
-
-    // ── ROW 2: Quality & operational metrics ──
-    '<div class="rpt-section-title" style="margin-bottom:10px;margin-top:20px;">Operational Health</div>'+
-    '<div class="kpi-row kpi-row-4" style="margin-bottom:10px;">'+
-      kpiCard(deptOnTrackPct+"%","Departments On Track","forest")+
-      kpiCard(uniqueTrainers,"Trainers / Facilitators","forest")+
-      kpiCard(reportsPerMonth.toFixed(1),"Avg Reports per Month","gold")+
-      kpiCard(avgTrainingDays.toFixed(1)+" days","Avg Session Length","gold")+
-    '</div>'+
-
-    // ── Properties with zero training callout ──
-    (propsWithout>0?
-      '<div style="background:#fff8f0;border:1px solid #B5562B;border-left:4px solid #B5562B;border-radius:8px;padding:14px 18px;margin-bottom:24px;">'+
-        '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#B5562B;margin-bottom:6px;">'+propsWithout+' Propert'+(propsWithout===1?'y':'ies')+' with No Training Recorded</div>'+
-        '<div style="font-size:13px;color:#5a3a2a;">'+zeroProps.map(function(p){return esc(p.name);}).join(' &nbsp;·&nbsp; ')+'</div>'+
-      '</div>' :
-      '<div style="background:#f0f9f4;border:1px solid #2F6B4F;border-left:4px solid #2F6B4F;border-radius:8px;padding:14px 18px;margin-bottom:24px;">'+
-        '<div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F6B4F;">✦ All Properties Have Training Recorded</div>'+
-      '</div>')+
-
-    // ── Dept follow-up health bar ──
-    (totalDepts?
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Departmental Follow-Up Health — All Reports</div>'+
-        '<div class="score-table">'+
-          [['On Track / Engaged / Encouraging','#4A8C65',deptCounts['good']||0],
-           ['Follow-up Planned','#BD9A5E',(deptCounts['mid-col']||0)],
-           ['Needs Attention','#B5562B',deptCounts['low-col']||0]].map(function(item){
-            var f=totalDepts?item[2]/totalDepts:0;
-            return '<div class="bar-chart-row">'+
-              '<div class="bl">'+item[0]+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:'+item[1]+'"></div></div>'+
-              '<div class="bv" style="color:'+item[1]+';">'+item[2]+' ('+Math.round(f*100)+'%)</div>'+
-            '</div>';
-          }).join("")+
-        '</div>'+
-      '</div>' : "")+
-
-    // ── Avg Q scores ──
-    (qArr.length?
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Group Average — Satisfaction by Question</div>'+
-        '<div class="score-table">'+
-          qArr.map(function(q){
-            var col=tierColor(q.score);
-            return '<div class="score-row">'+
-              '<div class="sq">'+esc(q.qnum)+' — '+esc(q.label)+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(q.score*100)+'%;background:'+col+'"></div></div>'+
-              '<div class="sp" style="color:'+col+'">'+pct(q.score)+'</div>'+
-            '</div>';
-          }).join("")+
-        '</div>'+
-        '<div class="legend-row">'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#4A8C65"></div>Excellent (97%+)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#BD9A5E"></div>Strong (92–96%)</div>'+
-          '<div class="legend-item"><div class="legend-dot" style="background:#B5562B"></div>Needs attention (&lt;92%)</div>'+
-        '</div>'+
-      '</div>' : "")+
-
-    // ── Hours by category ──
-    (catArr.length?
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Training Hours by Category</div>'+
-        '<div class="score-table">'+
-          catArr.map(function(cat){
-            var h=catHrs[cat], f=totalIndivHrs?h/totalIndivHrs:0;
-            return '<div class="bar-chart-row">'+
-              '<div class="bl">'+esc(cat)+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:var(--gold)"></div></div>'+
-              '<div class="bv">'+h.toFixed(0)+'h ('+Math.round(f*100)+'%)</div>'+
-            '</div>';
-          }).join("")+
-        '</div>'+
-      '</div>' : "")+
-
-    // ── Hours by division ──
-    (divArr.length?
-      '<div class="rpt-section">'+
-        '<div class="rpt-section-title">Training Hours by Division</div>'+
-        '<div class="score-table">'+
-          divArr.map(function(div){
-            var h=divHrs[div], f=totalIndivHrs?h/totalIndivHrs:0;
-            return '<div class="bar-chart-row">'+
-              '<div class="bl">'+esc(div)+'</div>'+
-              '<div class="bar-track"><div class="bar-fill" style="width:'+(f*100)+'%;background:#2F6B4F"></div></div>'+
-              '<div class="bv">'+h.toFixed(0)+'h ('+Math.round(f*100)+'%)</div>'+
-            '</div>';
-          }).join("")+
-        '</div>'+
-      '</div>' : "")+
-
-    // ── Reports table ──
-    '<div class="rpt-section">'+
-      '<div class="rpt-section-title">All Reports</div>'+
-      '<table class="group-table">'+
-        '<thead><tr><th>Property</th><th>Programme</th><th class="hide-tablet">Category</th><th class="hide-mobile">Date</th><th>Satisfaction</th><th>Participants</th><th class="hide-mobile">Indiv. Hrs</th><th class="hide-tablet">Avg Hrs/Person</th></tr></thead>'+
-        '<tbody>'+
-          loaded.slice().sort(function(a,b){ return (a.meta.property<b.meta.property)?-1:1; }).map(function(item){
-            var rep=item.rep, col=tierColor(rep.overallSat);
-            var avgH=rep.participants?(rep.totalIndivHours/rep.participants):0;
-            return '<tr>'+
-              '<td data-label="Property"><span class="lnk" data-prop="'+esc(item.meta.property)+'" data-idx="'+item.meta.idx+'" data-url="'+esc(item.meta.url)+'">'+esc(item.meta.property)+'</span></td>'+
-              '<td data-label="Programme">'+esc(rep.programme||item.meta.label)+'</td>'+
-              '<td class="hide-tablet" data-label="Category">'+esc(rep.trainingCategory)+'</td>'+
-              '<td class="hide-mobile" data-label="Date">'+esc(rep.reportDate||rep.monthYear)+'</td>'+
-              '<td data-label="Satisfaction" style="color:'+col+';font-weight:700;">'+pct(rep.overallSat)+'</td>'+
-              '<td data-label="Participants">'+rep.participants+'</td>'+
-              '<td class="hide-mobile" data-label="Indiv. Hrs">'+rep.totalIndivHours.toFixed(0)+'</td>'+
-              '<td class="hide-tablet" data-label="Avg Hrs/Person">'+avgH.toFixed(1)+'</td>'+
-            '</tr>';
-          }).join("")+
-        '</tbody>'+
-      '</table>'+
-    '</div>'+
-
-    // ── Property Coverage ──
-    '<div class="rpt-section">'+
-      '<div class="rpt-section-title">Property Coverage</div>'+
-      '<div class="coverage-grid">'+
-        PROPERTIES.map(function(p){
-          var n=getReports(p.name).length;
-          return '<div class="cov-item '+(n===0?"none":"")+'">'+
-            '<span class="ci-name">'+esc(p.name)+'</span>'+
-            '<span class="ci-count">'+(n===0?"No reports":n+" rpt"+(n===1?"":"s"))+'</span>'+
-          '</div>';
-        }).join("")+
-      '</div>'+
-    '</div>'+
-
-    '</div>'; // section-wrap
-
-  app.innerHTML=html;
-  wireTopbar();
-  var bbg=document.getElementById("btnBackGroup");
-  if(bbg) bbg.addEventListener("click", showHome);
-  document.querySelectorAll(".group-table .lnk").forEach(function(el){
-    el.addEventListener("click",function(){
-      var prop=PROPERTIES.find(function(p){return p.name===el.getAttribute("data-prop");});
-      var url=el.getAttribute("data-url");
-      var idx=parseInt(el.getAttribute("data-idx"),10);
-      if(!prop) return;
-      var label=getReports(prop.name)[idx]&&getReports(prop.name)[idx].label||"";
-      loadAndShowReport(url,{label:label,url:url,propName:prop.name});
-    });
-  });
-}
-
-// ================================================================
-// INIT
-// ================================================================
-showHome();
 
 })();
 </script>
-</body>
-</html>
