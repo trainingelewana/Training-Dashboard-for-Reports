@@ -1710,24 +1710,37 @@ function showYTD(){
     '<p style="color:var(--mist);font-size:14px;">Loading YTD tracker data…</p></div>';
   wireTopbar();
 
-  if(!YTD_CSV_URL){
-    renderYTDNoCsv();
-    return;
-  }
-
-  if(YTD_DATA_CACHE){
-    renderYTDHome(YTD_DATA_CACHE);
-    return;
-  }
+  if(!YTD_CSV_URL){ renderYTDNoCsv(); return; }
+  if(YTD_DATA_CACHE){ renderYTDHome(YTD_DATA_CACHE); return; }
 
   fetchCSV(YTD_CSV_URL, function(err, rows){
-    if(err||!rows){
-      renderYTDNoCsv();
+    if(err||!rows||rows.length===0){
+      renderYTDError('All connection routes failed. Click "Run Diagnostic" to see which routes are available from your browser.');
       return;
     }
     YTD_DATA_CACHE = parseGroupOverviewCSV(rows);
+    if(!YTD_DATA_CACHE||YTD_DATA_CACHE.length===0){
+      renderYTDError('CSV loaded but no property data found. Check column A in your sheet contains property codes (ACL, TTT, KLZ etc.).');
+      return;
+    }
     renderYTDHome(YTD_DATA_CACHE);
   });
+}
+
+function renderYTDError(msg){
+  STATE.view='ytd';
+  app.innerHTML=renderTopbar()+
+    '<div class="section-wrap" style="padding-top:48px;">'+
+    '<div style="background:rgba(181,86,43,0.1);border:1px solid rgba(181,86,43,0.3);border-radius:8px;padding:28px;max-width:640px;margin:0 auto;">'+
+    '<div style="font-size:22px;font-family:'Cormorant Garamond',serif;color:var(--cream);margin-bottom:10px;">⚠️ YTD data could not be loaded</div>'+
+    '<div style="font-size:13px;color:var(--mist);margin-bottom:20px;">'+esc(msg)+'</div>'+
+    '<button class="btn btn-gold" onclick="runYTDDiagnostic()" style="margin-bottom:16px;">Run Connection Diagnostic</button>'+
+    '<div id="ytd-diag-out" style="background:rgba(0,0,0,0.2);border-radius:6px;padding:14px;font-size:12px;font-family:monospace;color:var(--mist);min-height:40px;text-align:left;line-height:1.8;"></div>'+
+    '<div style="margin-top:16px;font-size:12px;color:var(--mist);">'+
+    'If all routes show ✗ Failed, the CORS proxies cannot reach your Google Sheet. '+
+    'Try opening <a href="'+YTD_CSV_URL+'" target="_blank" style="color:var(--gold);">this link</a> in your browser to confirm the sheet is publicly published.</div>'+
+    '</div></div>';
+  wireTopbar();
 }
 
 function renderYTDNoCsv(){
