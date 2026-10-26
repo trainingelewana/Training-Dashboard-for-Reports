@@ -1255,6 +1255,7 @@ body {
   .kpi-card .kv { font-size: 18px; }
   .topbar-actions .btn-ghost:not([id="btnGroup"]):not([id="btnYTD"]) { display: none; }
 }
+.integrated-view{max-width:1600px;margin:0 auto;padding:22px 24px 40px}.integrated-head{padding:20px 22px;background:var(--navy-mid,#26302c);border:1px solid var(--line,#555);border-radius:8px;margin-bottom:14px}.integrated-head h1{font-size:clamp(22px,3vw,36px);margin:0 0 8px}.integrated-head p{color:var(--mist,#ccc);line-height:1.6}.integrated-head a,.integrated-links a{color:var(--gold-light,#BD9A5E)}.integrated-frame{display:block;width:100%;height:78vh;min-height:650px;border:1px solid var(--line,#555);border-radius:8px;background:#f7f6f3}.integrated-links{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:18px}@media(max-width:600px){.integrated-view{padding:10px}.integrated-head{padding:14px}.integrated-frame{height:85vh;min-height:550px}.topbar-actions #btnCalendar,.topbar-actions #btnComparison{display:inline-block!important;font-size:11px;padding:8px 9px}.topbar-actions{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -1635,6 +1636,12 @@ function renderTopbar(){
       (STATE.view==="ytd"||STATE.view==="ytd_property"
         ? '<button class="btn btn-active" id="btnYTD">YTD Training</button>'
         : '<button class="btn btn-ghost" id="btnYTD">YTD Training</button>')+
+      (STATE.view==="calendar"
+        ? '<button class="btn btn-active" id="btnCalendar">Training Calendar</button>'
+        : '<button class="btn btn-ghost" id="btnCalendar">Training Calendar</button>')+
+      (STATE.view==="comparison"
+        ? '<button class="btn btn-active" id="btnComparison">Annual Comparison</button>'
+        : '<button class="btn btn-ghost" id="btnComparison">Annual Comparison</button>')+
     '</div>'+
   '</div>';
 }
@@ -1646,8 +1653,36 @@ function wireTopbar(){
   if(bg) bg.addEventListener("click",function(){ showGroup(); });
   var by=document.getElementById("btnYTD");
   if(by) by.addEventListener("click",function(){ showYTD(); });
+  var bc=document.getElementById("btnCalendar");
+  if(bc) bc.addEventListener("click",showCalendar);
+  var bcmp=document.getElementById("btnComparison");
+  if(bcmp) bcmp.addEventListener("click",showComparison);
 }
 
+// Integrated portal views. Existing YTD and report feeds remain unchanged.
+function showCalendar(){
+  STATE.view="calendar";
+  app.innerHTML=renderTopbar()+
+    '<main class="integrated-view">'+
+    '<div class="integrated-head"><h1>Group Training Calendar</h1>'+
+    '<p>Live 2027 planning, schedules and attendance registration. The calendar retains its existing Google Apps Script connection.</p>'+
+    '<a href="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection" target="_blank" rel="noopener noreferrer">Open calendar in a new tab</a></div>'+
+    '<iframe class="integrated-frame" title="Elewana Group Training Calendar 2027" loading="lazy" src="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection"></iframe>'+
+    '</main>';
+  wireTopbar();
+}
+function showComparison(){
+  STATE.view="comparison";
+  app.innerHTML=renderTopbar()+
+    '<main class="integrated-view"><div class="integrated-head"><h1>Annual Training Comparison · 2026 vs 2027</h1>'+
+    '<p>Official actual learning hours are sourced from property Master Training Trackers through the Group Learning &amp; Capability Development Overview. Planned calendar hours are not included as completed hours.</p>'+
+    '<p><strong>2026 historical reports:</strong> imported into the Group Training Plan. <strong>2027 actuals:</strong> awaiting year-specific tracker consolidation and like-for-like validation.</p>'+
+    '<p>This comparison will display verified yearly results after the 2027 tracker feed is connected. No provisional totals are shown as actual.</p>'+
+    '<div class="integrated-links"><button class="btn btn-gold" id="comparisonYTD">View current YTD Learning Hours</button>'+
+    '<a href="https://docs.google.com/spreadsheets/d/1A-_n39L-wzDXTiwc5DcsAqUSawKvEgg0Wvk_qP2YR48/edit" target="_blank" rel="noopener noreferrer">Open master training plan</a></div></div></main>';
+  wireTopbar();
+  document.getElementById("comparisonYTD").addEventListener("click",showYTD);
+}
 // ================================================================
 // HOME VIEW
 // ================================================================
