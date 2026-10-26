@@ -1664,7 +1664,7 @@ function wireTopbar(){
 function showCalendar(){
   history.replaceState(null,"","#calendar");
   STATE.view="calendar";
-  var calendarUrl="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection";
+  var calendarUrl="https://trainingelewana.github.io/Training-Calendar-2027/?layout=2col-20261026#plannerSection";
   app.innerHTML=renderTopbar()+
     '<main class="integrated-view calendar-only">'+
       '<iframe class="integrated-frame" title="2027 Training Calendar" src="'+calendarUrl+'" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'+
