@@ -1256,7 +1256,7 @@ body {
   .topbar-actions .btn-ghost:not([id="btnGroup"]):not([id="btnYTD"]) { display: none; }
 }
 .integrated-view{max-width:1600px;margin:0 auto;padding:22px 24px 40px}.integrated-head{padding:20px 22px;background:var(--navy-mid,#26302c);border:1px solid var(--line,#555);border-radius:8px;margin-bottom:14px}.integrated-head h1{font-size:clamp(22px,3vw,36px);margin:0 0 8px}.integrated-head p{color:var(--mist,#ccc);line-height:1.6}.integrated-head a,.integrated-links a{color:var(--gold-light,#BD9A5E)}.integrated-frame{display:block;width:100%;height:78vh;min-height:650px;border:1px solid var(--line,#555);border-radius:8px;background:#f7f6f3}.integrated-links{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:18px}@media(max-width:600px){.integrated-view{padding:10px}.integrated-head{padding:14px}.integrated-frame{height:85vh;min-height:550px}.topbar-actions #btnCalendar,.topbar-actions #btnComparison{display:inline-block!important;font-size:11px;padding:8px 9px}.topbar-actions{flex-wrap:wrap}}
-</style>
+.calendar-only{max-width:none;padding:0}.calendar-only .integrated-frame{border:0;border-radius:0;min-height:calc(100vh - 110px);height:calc(100vh - 110px)}</style>
 </head>
 <body>
 
@@ -1665,10 +1665,7 @@ function showCalendar(){
   STATE.view="calendar";
   var calendarUrl="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection";
   app.innerHTML=renderTopbar()+
-    '<main class="integrated-view">'+
-      '<div class="integrated-head"><h1>2027 Training Calendar</h1>'+
-      '<p>Review the training calendar without leaving the Group Training Dashboard.</p>'+
-      '<div class="integrated-links"><a href="'+calendarUrl+'" target="_blank" rel="noopener noreferrer">Open calendar separately if needed</a></div></div>'+
+    '<main class="integrated-view calendar-only">'+
       '<iframe class="integrated-frame" title="2027 Training Calendar" src="'+calendarUrl+'" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'+
     '</main>';
   wireTopbar();
