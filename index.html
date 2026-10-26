@@ -1661,15 +1661,8 @@ function wireTopbar(){
 
 // Integrated portal views. Existing YTD and report feeds remain unchanged.
 function showCalendar(){
-  STATE.view="calendar";
-  app.innerHTML=renderTopbar()+
-    '<main class="integrated-view">'+
-    '<div class="integrated-head"><h1>Group Training Calendar</h1>'+
-    '<p>Live 2027 planning, schedules and attendance registration. The calendar retains its existing Google Apps Script connection.</p>'+
-    '<a href="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection" target="_blank" rel="noopener noreferrer">Open calendar in a new tab</a></div>'+
-    '<iframe class="integrated-frame" title="Elewana Group Training Calendar 2027" loading="lazy" src="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection"></iframe>'+
-    '</main>';
-  wireTopbar();
+  // Open the original calendar directly instead of nesting a second website.
+  window.open("https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection","_blank","noopener,noreferrer");
 }
 function showComparison(){
   STATE.view="comparison";
