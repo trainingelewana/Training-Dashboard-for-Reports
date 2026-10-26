@@ -2551,7 +2551,36 @@ function lookupDeptHeadcount(deptName){
   return 0;
 }
 
-var YTD_DEPT_DATA = {"ACL": {"Accounts": 59.41666667, "Admin": 0.0, "Curio": 40.0, "Food & Beverage": 884.20333333, "Front Office": 418.01666663000003, "Garden": 36.0, "Guides": 0.0, "Housekeeping": 578.4833332999999, "IT": 25.716, "Kitchen": 284.4766666667, "Laundry": 25.299999999999997, "Maintenance": 95.0, "Management": 170.84866667, "Medic": 0.0, "Procurement": 0.0, "Security": 79.33333333, "Spa & Wellness": 17.366, "Stores": 0.0}, "TTT": {"Accounts": 29.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 105.25, "Front Office": 86.89866667000001, "Garden": 0.0, "Guides": 7.5, "Housekeeping": 173.36599999999999, "IT": 0.0, "Kitchen": 580.233, "Laundry": 0.0, "Maintenance": 197.5, "Management": 140.26, "Medic": 2.75, "Procurement": 0.0, "Security": 74.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "TMN": {"Accounts": 6.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 42.25, "Front Office": 23.66, "Garden": 9.0, "Guides": 0.0, "Housekeeping": 34.983000000000004, "IT": 0.0, "Kitchen": 865.15, "Laundry": 0.0, "Maintenance": 184.0, "Management": 12.5, "Medic": 0.0, "Procurement": 0.0, "Security": 10.0, "Spa & Wellness": 20.026, "Stores": 8.315999999999999}, "SPC": {"Accounts": 47.129999999999995, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 153.183, "Front Office": 65.12, "Garden": 0.0, "Guides": 31.75, "Housekeeping": 139.056, "IT": 0.0, "Kitchen": 141.44633333333, "Laundry": 0.0, "Maintenance": 14.366, "Management": 75.00999999999999, "Medic": 0.0, "Procurement": 0.0, "Security": 57.5, "Spa & Wellness": 0.0, "Stores": 0.0}, "SXR": {"Accounts": 3.0, "Admin": 17.0, "Curio": 0.0, "Food & Beverage": 1283.995, "Front Office": 154.7786, "Garden": 170.8, "Guides": 144.0, "Housekeeping": 276.716, "IT": 0.0, "Kitchen": 384.25, "Laundry": 0.0, "Maintenance": 496.38, "Management": 1.5, "Medic": 0.0, "Procurement": 0.0, "Security": 66.38, "Spa & Wellness": 64.6, "Stores": 50.9}, "SMC": {"Accounts": 1.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 46.3, "Front Office": 27.4, "Garden": 0.0, "Guides": 0.0, "Housekeeping": 41.254000000000005, "IT": 0.0, "Kitchen": 7.75, "Laundry": 0.0, "Maintenance": 0.0, "Management": 4.0, "Medic": 21.0, "Procurement": 0.0, "Security": 30.0, "Spa & Wellness": 0.0, "Stores": 2.0}, "KLZ": {"Accounts": 16.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 254.106, "Front Office": 62.04599999999999, "Garden": 0.0, "Guides": 0.0, "Housekeeping": 166.445, "IT": 0.0, "Kitchen": 350.0, "Laundry": 0.0, "Maintenance": 303.75, "Management": 76.365, "Medic": 0.0, "Procurement": 15.933, "Security": 6.0, "Spa & Wellness": 22.0, "Stores": 7.0}, "TCA": {"Accounts": 42.233000000000004, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 181.3, "Front Office": 102.272, "Garden": 0.0, "Guides": 565.73, "Housekeeping": 140.143, "IT": 0.0, "Kitchen": 1091.726, "Laundry": 0.0, "Maintenance": 97.0, "Management": 66.41, "Medic": 0.0, "Procurement": 0.0, "Security": 28.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "EPC": {"Accounts": 43.456, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 212.83666667, "Front Office": 30.792, "Garden": 18.0, "Guides": 261.0, "Housekeeping": 148.34, "IT": 0.0, "Kitchen": 711.46, "Laundry": 0.0, "Maintenance": 40.0, "Management": 43.998999999999995, "Medic": 0.0, "Procurement": 0.0, "Security": 75.0, "Spa & Wellness": 1.25, "Stores": 0.0}, "LEPC": {"Accounts": 0.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 0.0, "Front Office": 0.0, "Garden": 0.0, "Guides": 0.0, "Housekeeping": 0.0, "IT": 0.0, "Kitchen": 0.0, "Laundry": 0.0, "Maintenance": 0.0, "Management": 0.0, "Medic": 0.0, "Procurement": 0.0, "Security": 0.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "SRM": {"Accounts": 36.5, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 357.28833333, "Front Office": 76.34299999999999, "Garden": 0.0, "Guides": 184.91, "Housekeeping": 187.31633333, "IT": 0.0, "Kitchen": 1254.0, "Laundry": 0.0, "Maintenance": 34.0, "Management": 154.95, "Medic": 0.0, "Procurement": 0.0, "Security": 46.5, "Spa & Wellness": 0.0, "Stores": 0.0}, "LTC": {"Accounts": 22.099, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 309.526, "Front Office": 101.7496, "Garden": 0.0, "Guides": 269.0, "Housekeeping": 119.0, "IT": 0.0, "Kitchen": 1508.715, "Laundry": 0.0, "Maintenance": 162.0, "Management": 35.0, "Medic": 0.0, "Procurement": 0.0, "Security": 29.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "LLS": {"Accounts": 25.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 93.24966667, "Front Office": 49.18, "Garden": 0.0, "Guides": 44.0, "Housekeeping": 133.0, "IT": 0.0, "Kitchen": 174.0, "Laundry": 0.0, "Maintenance": 63.45, "Management": 23.93, "Medic": 0.0, "Procurement": 0.0, "Security": 22.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "LSB": {"Accounts": 0.0, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 0.0, "Front Office": 0.0, "Garden": 0.0, "Guides": 0.0, "Housekeeping": 8.0, "IT": 0.0, "Kitchen": 15.0, "Laundry": 0.0, "Maintenance": 3.0, "Management": 1.03333333333, "Medic": 0.0, "Procurement": 0.0, "Security": 7.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "LSC": {"Accounts": 41.596000000000004, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 97.51299999999999, "Front Office": 59.899, "Garden": 0.0, "Guides": 1.783333333, "Housekeeping": 86.26599999999999, "IT": 0.0, "Kitchen": 1460.9956670000001, "Laundry": 0.0, "Maintenance": 33.11666667, "Management": 81.11566667, "Medic": 0.0, "Procurement": 0.0, "Security": 6.0, "Spa & Wellness": 0.0, "Stores": 0.0}, "KHL": {"Accounts": 10.366, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 103.445, "Front Office": 0.0, "Garden": 0.0, "Guides": 153.5, "Housekeeping": 80.5666, "IT": 0.0, "Kitchen": 94.26599999999999, "Laundry": 0.0, "Maintenance": 57.7, "Management": 92.85000000000001, "Medic": 0.0, "Procurement": 0.0, "Security": 27.5, "Spa & Wellness": 0.0, "Stores": 0.0}, "EKM": {"Accounts": 29.516666667, "Admin": 0.0, "Curio": 0.0, "Food & Beverage": 201.99966667, "Front Office": 79.27233333, "Garden": 11.899999999999999, "Guides": 377.61666666, "Housekeeping": 175.89866666, "IT": 0.0, "Kitchen": 905.583000003, "Laundry": 0.0, "Maintenance": 155.76600000000002, "Management": 103.70000000699999, "Medic": 0.0, "Procurement": 0.0, "Security": 101.19866667, "Spa & Wellness": 16.316666667, "Stores": 0.0}};
+var YTD_DEPT_DATA = {};
+
+// Read the live departmental matrix from the SAME published Group Overview CSV.
+// Identify the property-code header, rather than relying on fixed row numbers.
+function parseDeptHoursBlock(rows){
+  var out = {};
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i]||[];
+    if((r[2]||'').toString().trim()!=='ACL'||(r[3]||'').toString().trim()!=='TTT')continue;
+    var codeColumns=[];
+    for(var col=2;col<r.length;col++){
+      var code=(r[col]||'').toString().trim();
+      if(YTD_CODE_MAP[code]){codeColumns.push({code:code,col:col});if(!out[code])out[code]={};}
+    }
+    if(codeColumns.length<8)continue;
+    for(var j=i+1;j<Math.min(rows.length,i+30);j++){
+      var line=rows[j]||[];
+      var department=(line[1]||'').toString().trim();
+      if(!department||department==='TOTAL'||!/[A-Za-z]/.test(department))continue;
+      if(department==='Property'||department==='Month')break;
+      codeColumns.forEach(function(p){
+        var str=(line[p.col]||'').toString().replace(/,/g,'').trim();
+        var value=Number(str);
+        if(str!==''&&Number.isFinite(value))out[p.code][department]=value;
+      });
+    }
+    return out;
+  }
+  return out;
+}
 
 function parseGroupOverviewCSV(rows){
   var props = {};
@@ -2667,6 +2696,7 @@ function showYTD(){
     }
     YTD_DATA_CACHE = parseGroupOverviewCSV(rows);
     YTD_DEPT_HEADCOUNT = parseDeptHeadcountBlock(rows);
+    YTD_DEPT_DATA = parseDeptHoursBlock(rows);
     if(!YTD_DATA_CACHE||YTD_DATA_CACHE.length===0){
       renderYTDError('CSV loaded but no property data found. Check column A in your sheet contains property codes (ACL, TTT, KLZ etc.).');
       return;
