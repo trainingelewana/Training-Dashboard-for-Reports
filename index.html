@@ -2582,6 +2582,13 @@ function parseDeptHoursBlock(rows){
   return out;
 }
 
+function ytdCSVNumber(value){
+  // Google published CSV may contain thousands separators and percentages.
+  var str=(value==null?'':String(value)).replace(/,/g,'').trim();
+  var num=parseFloat(str.replace(/%$/,''));
+  return isFinite(num)?num:0;
+}
+
 function parseGroupOverviewCSV(rows){
   var props = {};
   var currentCode = null;
@@ -2619,10 +2626,10 @@ function parseGroupOverviewCSV(rows){
       // Only take the first TOTAL for each property
       if(!props[currentCode].total.ytdHrs){
         props[currentCode].total = {
-          teamMembers: parseFloat(r[2])||0,
-          ytdHrs:      parseFloat(r[3])||0,
-          avgHrs:      parseFloat(r[4])||0,
-          pctTo50:     parseFloat(r[5])||0
+          teamMembers: ytdCSVNumber(r[2]),
+          ytdHrs:      ytdCSVNumber(r[3]),
+          avgHrs:      ytdCSVNumber(r[4]),
+          pctTo50:     ytdCSVNumber(r[5])
         };
       }
       return;
@@ -2647,13 +2654,13 @@ function parseGroupOverviewCSV(rows){
 
       props[currentCode].months.push({
         month:       monthLabel,
-        teamMembers: parseFloat(r[2])||0,
-        totalHrs:    parseFloat(r[3])||0,
-        avgHrs:      parseFloat(r[4])||0,
-        pctTo50:     parseFloat(r[5])||0,
+        teamMembers: ytdCSVNumber(r[2]),
+        totalHrs:    ytdCSVNumber(r[3]),
+        avgHrs:      ytdCSVNumber(r[4]),
+        pctTo50:     ytdCSVNumber(r[5]),
         subDate:     (r[6]||'').toString().trim(),
         evidenceOk:  (r[7]||'').toString().trim(),
-        ytdHrs:      parseFloat(r[8])||0,
+        ytdHrs:      ytdCSVNumber(r[8]),
         tzTraj:      (r[11]||'').toString().trim(),
         keTraj:      (r[14]||'').toString().trim()
       });
