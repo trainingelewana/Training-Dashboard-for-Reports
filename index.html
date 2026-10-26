@@ -1638,8 +1638,8 @@ function renderTopbar(){
         ? '<button class="btn btn-active" id="btnYTD">2026 YTD Training</button>'
         : '<button class="btn btn-ghost" id="btnYTD">2026 YTD Training</button>')+
       (STATE.view==="calendar"
-        ? '<button class="btn btn-active" id="btnCalendar">Training Calendar</button>'
-        : '<button class="btn btn-ghost" id="btnCalendar">Training Calendar</button>')+
+        ? '<button class="btn btn-active" id="btnCalendar">2027 Training Calendar</button>'
+        : '<button class="btn btn-ghost" id="btnCalendar">2027 Training Calendar</button>')+
       (STATE.view==="comparison"
         ? '<button class="btn btn-active" id="btnComparison">Annual Comparison</button>'
         : '<button class="btn btn-ghost" id="btnComparison">Annual Comparison</button>')+
@@ -1662,8 +1662,16 @@ function wireTopbar(){
 
 // Integrated portal views. Existing YTD and report feeds remain unchanged.
 function showCalendar(){
-  // Open the original calendar directly instead of nesting a second website.
-  window.open("https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection","_blank","noopener,noreferrer");
+  STATE.view="calendar";
+  var calendarUrl="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection";
+  app.innerHTML=renderTopbar()+
+    '<main class="integrated-view">'+
+      '<div class="integrated-head"><h1>2027 Training Calendar</h1>'+
+      '<p>Review the training calendar without leaving the Group Training Dashboard.</p>'+
+      '<div class="integrated-links"><a href="'+calendarUrl+'" target="_blank" rel="noopener noreferrer">Open calendar separately if needed</a></div></div>'+
+      '<iframe class="integrated-frame" title="2027 Training Calendar" src="'+calendarUrl+'" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'+
+    '</main>';
+  wireTopbar();
 }
 function showComparison(){
   STATE.view="comparison";
