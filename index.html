@@ -1316,6 +1316,7 @@ var modalEl = document.getElementById("adminModal");
 // This is the published CSV link for the "Elewana Training Report Registry" sheet.
 // Column A = Property Name, Column B = Report Title, Column C = Published CSV Link
 // Add a new row there every time you complete a report — no code changes needed.
+var REPORT_REGISTRY_DEFAULT_YEAR = "2026"; // Current registry is the historic 2026 report source.
 var REGISTRY_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXBeWbYcy3WlJiNsBYqVdsXxQ83FJmlXoIZhEpic7LCddRngx69KJ5d42YXQnVZg_rZTiRBSAA5HM1/pub?gid=0&single=true&output=csv";
 
 // In-memory registry — loaded once from the Google Sheet on startup
@@ -1361,7 +1362,7 @@ function loadRegistry(cb){
         // Skip header row and empty rows
         if(!prop || !url || prop.toLowerCase()==='property') continue;
         if(!REGISTRY[prop]) REGISTRY[prop] = [];
-        REGISTRY[prop].push({label: label||'Training Report', url: url});
+        REGISTRY[prop].push({label: label||'Training Report', url: url, year: REPORT_REGISTRY_DEFAULT_YEAR});
       }
     }
     REGISTRY_LOADED = true;
@@ -1388,7 +1389,7 @@ function getReports(propName){
         });
       });
       if(found && !direct.some(function(d){return d.url===url;})){
-        cross.push({label:found.label+' ✦', url:url, crossProperty:true});
+        cross.push({label:found.label+' ✦', url:url, crossProperty:true, year:found.year||REPORT_REGISTRY_DEFAULT_YEAR});
       }
     }
   });
@@ -1814,7 +1815,7 @@ function _renderPropertyReports(prop){
         return '<div class="report-card" data-idx="'+i+'" data-url="'+esc(r.url)+'">'+
           '<div>'+
             '<div class="rc-label">'+esc(r.label)+'</div>'+
-            '<div class="rc-meta">'+esc(prop.name)+'</div>'+
+            '<div class="rc-meta">'+esc(prop.name)+' &nbsp;·&nbsp; '+esc(r.year||REPORT_REGISTRY_DEFAULT_YEAR)+'</div>'+
           '</div>'+
           '<span class="rc-arrow">›</span>'+
         '</div>';
@@ -1840,7 +1841,7 @@ function _renderPropertyReports(prop){
       var url=el.getAttribute("data-url");
       var idx=parseInt(el.getAttribute("data-idx"),10);
       var label=reports[idx].label;
-      loadAndShowReport(url,{label:label,url:url,propName:prop.name});
+      loadAndShowReport(url,{label:label,url:url,propName:prop.name,year:reports[idx].year||REPORT_REGISTRY_DEFAULT_YEAR});
     });
   });
 }
@@ -1898,7 +1899,7 @@ function renderReport(rows, meta){
     '<div class="report-header">'+
       '<div class="rh-prop">'+esc(rep.property||meta.propName)+'</div>'+
       '<div class="rh-title">'+esc(rep.programme||meta.label)+'</div>'+
-      '<div class="rh-meta">'+esc(rep.monthYear)+(rep.reportDate?' &nbsp;·&nbsp; Report date: '+esc(rep.reportDate):'')+(rep.trainer?' &nbsp;·&nbsp; '+esc(rep.trainer):'')+'</div>'+
+      '<div class="rh-meta">'+esc(meta.year||rep.monthYear||'')+' &nbsp;·&nbsp; '+esc(rep.monthYear)+(rep.reportDate?' &nbsp;·&nbsp; Report date: '+esc(rep.reportDate):'')+(rep.trainer?' &nbsp;·&nbsp; '+esc(rep.trainer):'')+'</div>'+
     '</div>'+
     '<div class="section-wrap">'+
       '<button class="back-btn" id="btnBackRpt" style="margin-bottom:24px;">← '+esc(meta.propName)+' Reports</button>'+
