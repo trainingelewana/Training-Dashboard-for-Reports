@@ -1673,14 +1673,8 @@ function showCalendar(){
 function showComparison(){
   STATE.view="comparison";
   app.innerHTML=renderTopbar()+
-    '<main class="integrated-view"><div class="integrated-head"><h1>Annual Training Comparison · 2026 vs 2027</h1>'+
-    '<p>Official actual learning hours are sourced from property Master Training Trackers through the Group Learning &amp; Capability Development Overview. Planned calendar hours are not included as completed hours.</p>'+
-    '<p><strong>2026 historical reports:</strong> imported into the Group Training Plan. <strong>2027 actuals:</strong> awaiting year-specific tracker consolidation and like-for-like validation.</p>'+
-    '<p>This comparison will display verified yearly results after the 2027 tracker feed is connected. No provisional totals are shown as actual.</p>'+
-    '<div class="integrated-links"><button class="btn btn-gold" id="comparisonYTD">View current YTD Learning Hours</button>'+
-    '<a href="https://docs.google.com/spreadsheets/d/1A-_n39L-wzDXTiwc5DcsAqUSawKvEgg0Wvk_qP2YR48/edit" target="_blank" rel="noopener noreferrer">Open master training plan</a></div></div></main>';
+    '<main class="integrated-view" aria-label="Annual comparison" style="min-height:70vh"></main>';
   wireTopbar();
-  document.getElementById("comparisonYTD").addEventListener("click",showYTD);
 }
 // ================================================================
 // HOME VIEW
