@@ -1742,18 +1742,13 @@ function _renderHome(){
   };
 
   var multiSection = multiReports.length ?
-    '<div class="section-label" style="margin-top:32px;">Multi-Property Sessions</div>'+
-    '<div class="report-list" style="margin-bottom:32px;">'+
-      multiReports.map(function(item){
-        return '<div class="report-card" data-url="'+esc(item.url)+'" data-multi="1">'+
-          '<div>'+
-            '<div class="rc-label">✦ '+esc(item.label)+'</div>'+
-            '<div class="rc-meta">'+item.props.map(esc).join(' · ')+'</div>'+
-          '</div>'+
-          '<span class="rc-arrow">›</span>'+
-        '</div>';
-      }).join("")+
-    '</div>' : '';
+    '<div class="section-label" style="margin-top:32px;">Shared Training</div>'+
+    '<div class="prop-grid" style="margin-bottom:32px;">'+
+      '<div class="prop-card" id="multiPropertyTile" role="button" tabindex="0">'+
+        '<div class="prop-code">MULTI-PROPERTY</div>'+
+        '<div class="prop-name">Multi-Property Sessions</div>'+
+        '<div class="prop-count">'+multiReports.length+(multiReports.length===1?' shared report':' shared reports')+'</div>'+
+      '</div></div>' : '';
 
   var html = renderTopbar()+
     '<div class="section-wrap" style="padding-top:40px;">'+
@@ -1778,12 +1773,33 @@ function _renderHome(){
       if(prop) showPropertyReports(prop);
     });
   });
-  // Wire multi-property report cards
-  document.querySelectorAll(".report-card[data-multi]").forEach(function(el){
+  var multiTile=document.getElementById("multiPropertyTile");
+  if(multiTile){
+    var openMulti=function(){ showMultiPropertyReports(multiReports); };
+    multiTile.addEventListener("click",openMulti);
+    multiTile.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openMulti();}});
+  }
+}
+
+function showMultiPropertyReports(multiReports){
+  STATE.view="multi_property_reports";
+  var html=renderTopbar()+
+    '<div class="section-wrap" style="padding-top:32px;">'+
+      '<div class="back-row"><button class="back-btn" id="btnBackMulti">← All Properties</button>'+
+        '<span class="prop-title">Multi-Property Sessions</span></div>'+
+      '<div class="section-label">Shared Training Reports</div>'+
+      '<div class="report-list">'+multiReports.map(function(item,i){
+        return '<div class="report-card" data-multi-index="'+i+'">'+
+          '<div><div class="rc-label">'+esc(item.label||"Training Report")+'</div>'+
+          '<div class="rc-meta">'+item.props.map(esc).join(" · ")+'</div></div>'+
+          '<span class="rc-arrow">›</span></div>';
+      }).join("")+'</div></div>';
+  app.innerHTML=html;wireTopbar();
+  document.getElementById("btnBackMulti").addEventListener("click",showHome);
+  document.querySelectorAll("[data-multi-index]").forEach(function(el){
     el.addEventListener("click",function(){
-      var url = el.getAttribute("data-url");
-      var label = el.querySelector(".rc-label").textContent.replace("✦ ","");
-      loadAndShowReport(url,{label:label, url:url, propName:"Multi-Property Session"});
+      var item=multiReports[Number(el.getAttribute("data-multi-index"))];
+      loadAndShowReport(item.url,{label:item.label,url:item.url,propName:"Multi-Property Session",year:REPORT_REGISTRY_DEFAULT_YEAR});
     });
   });
 }
