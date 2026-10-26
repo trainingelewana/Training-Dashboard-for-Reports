@@ -1635,8 +1635,8 @@ function renderTopbar(){
         ? '<button class="btn btn-active btn-group-overview" id="btnGroup">Group Overview</button>'
         : '<button class="btn btn-ghost btn-group-overview" id="btnGroup">Group Overview</button>')+
       (STATE.view==="ytd"||STATE.view==="ytd_property"
-        ? '<button class="btn btn-active" id="btnYTD">YTD Training</button>'
-        : '<button class="btn btn-ghost" id="btnYTD">YTD Training</button>')+
+        ? '<button class="btn btn-active" id="btnYTD">2026 YTD Training</button>'
+        : '<button class="btn btn-ghost" id="btnYTD">2026 YTD Training</button>')+
       (STATE.view==="calendar"
         ? '<button class="btn btn-active" id="btnCalendar">Training Calendar</button>'
         : '<button class="btn btn-ghost" id="btnCalendar">Training Calendar</button>')+
@@ -3176,7 +3176,7 @@ function renderYTDProperty(p){
 
   var html = renderTopbar()+
     '<div class="report-header">'+
-      '<button class="back-btn" id="btnBackYTD" style="margin-bottom:12px;">← YTD Training Overview</button>'+
+      '<button class="back-btn" id="btnBackYTD" style="margin-bottom:12px;">← 2026 YTD Training Overview</button>'+
       '<h2 class="rh-title">'+esc(p.name)+'</h2>'+
       '<div class="rh-meta" style="margin-top:4px;">'+esc(p.country)+' · On-Site Training YTD · 50-hour annual target per team member</div>'+
     '</div>'+
