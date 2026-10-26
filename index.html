@@ -1690,6 +1690,7 @@ function showHome(){
     mergeLocalOverrides();
     // Pre-fetch all reports to populate MULTI_PROP_CACHE before rendering home
     var allRpts = allLoadedReports();
+    if(STATE.view!=="home") return;
     if(allRpts.length === 0){ _renderHome(); return; }
     var pending = allRpts.length;
     allRpts.forEach(function(item){
@@ -1700,13 +1701,14 @@ function showHome(){
           cacheMultiProps(item.url, rep);
         }
         pending--;
-        if(pending === 0) _renderHome();
+        if(pending === 0 && STATE.view==="home") _renderHome();
       });
     });
   });
 }
 
 function _renderHome(){
+  if(STATE.view!=="home") return;
   var tz = PROPERTIES.filter(function(p){return p.country==="Tanzania";});
   var ke = PROPERTIES.filter(function(p){return p.country==="Kenya";});
   var vt = PROPERTIES.filter(function(p){return p.country==="Virtual";});
@@ -3273,10 +3275,11 @@ function renderYTDProperty(p){
   });
 }
 
-document.addEventListener('DOMContentLoaded', function(){ showHome(); });
-
-
-showHome();
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', showHome, {once:true});
+} else {
+  showHome();
+}
 
 })();
 </script>
