@@ -1662,6 +1662,7 @@ function wireTopbar(){
 
 // Integrated portal views. Existing YTD and report feeds remain unchanged.
 function showCalendar(){
+  history.replaceState(null,"","#calendar");
   STATE.view="calendar";
   var calendarUrl="https://trainingelewana.github.io/Training-Calendar-2027/#plannerSection";
   app.innerHTML=renderTopbar()+
@@ -1671,6 +1672,7 @@ function showCalendar(){
   wireTopbar();
 }
 function showComparison(){
+  history.replaceState(null,"","#comparison");
   STATE.view="comparison";
   app.innerHTML=renderTopbar()+
     '<main class="integrated-view" aria-label="Annual comparison" style="min-height:70vh"></main>';
@@ -1680,6 +1682,7 @@ function showComparison(){
 // HOME VIEW
 // ================================================================
 function showHome(){
+  history.replaceState(null,"","#reports");
   STATE.view="home";
   app.innerHTML = renderTopbar() +
     '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
@@ -2145,6 +2148,7 @@ function kpiCard(val, label, style){
 // GROUP OVERVIEW
 // ================================================================
 function showGroup(){
+  history.replaceState(null,"","#group");
   STATE.view="group";
   app.innerHTML = renderTopbar() +
     '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
@@ -2704,6 +2708,7 @@ function mostRecentActiveMonth(months){
 
 // ── Main YTD view ──────────────────────────────────────────────────────────
 function showYTD(){
+  history.replaceState(null,"","#ytd");
   STATE.view='ytd';
   app.innerHTML = renderTopbar()+
     '<div class="section-wrap" style="padding-top:60px;text-align:center;">'+
@@ -3275,10 +3280,18 @@ function renderYTDProperty(p){
   });
 }
 
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', showHome, {once:true});
-} else {
+function restoreDashboardView(){
+  var route=window.location.hash.toLowerCase();
+  if(route==='#calendar'){showCalendar();return;}
+  if(route==='#comparison'){showComparison();return;}
+  if(route==='#ytd'){showYTD();return;}
+  if(route==='#group'){showGroup();return;}
   showHome();
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', restoreDashboardView, {once:true});
+} else {
+  restoreDashboardView();
 }
 
 })();
