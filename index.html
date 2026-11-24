@@ -2859,8 +2859,11 @@ function renderYTDHome(props){
   var maxTrendHrs=0;
   trendArr.forEach(function(t){ if(t.hrs>maxTrendHrs) maxTrendHrs=t.hrs; });
   var bestMonth=trendArr.reduce(function(a,b){ return b.hrs>a.hrs?b:a; },{month:'',hrs:0});
-  var lastMonth=trendArr[trendArr.length-1]||{month:'',hrs:0};
-  var prevMonth=trendArr[trendArr.length-2]||null;
+  // Most recent month with hours logged (future months show 0h and are skipped)
+  var lastIdx=trendArr.length-1;
+  while(lastIdx>0 && !(trendArr[lastIdx].hrs>0)) lastIdx--;
+  var lastMonth=trendArr[lastIdx]||{month:'',hrs:0};
+  var prevMonth=lastIdx>0?trendArr[lastIdx-1]:null;
 
   // Full YTD property rankings
   var physicalProps=props.filter(function(p){return p.country!=='Virtual';});
