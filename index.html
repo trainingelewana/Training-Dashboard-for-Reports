@@ -2898,7 +2898,7 @@ function renderYTDHome(props){
             '<div style="height:100%;width:'+Math.max(0,p.avg/rankingScale*100)+'%;background:'+color+';border-radius:3px;"></div>'+
             '<div style="position:absolute;top:-2px;bottom:-2px;left:calc('+target+'% - 1px);border-left:2px dashed var(--cream);"></div></div></div>';
       }).join('')+
-      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mist);margin-top:8px;"><span>0h</span><span>'+rankingScale.toFixed(1)+'h</span></div>';
+      '<div style="font-size:11px;color:var(--mist);margin-top:8px;">Scale: 0h — '+rankingScale.toFixed(1)+'h · dashed line = 50h target</div>';
   }
 
   // Dept group totals
