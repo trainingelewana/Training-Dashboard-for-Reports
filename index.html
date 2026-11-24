@@ -2705,9 +2705,20 @@ function parseGroupOverviewCSV(rows){
   return Object.values(props);
 }
 
+// A month whose RAG shows "⏳ Pending" is not due yet (its submission deadline
+// has not passed), so it must not drive a property's status or compliance.
+function isPendingMonth(mo){
+  var tz=(mo.tzTraj||''), ke=(mo.keTraj||'');
+  return tz.indexOf('Pending')>-1 && ke.indexOf('Pending')>-1;
+}
+
+// Latest month that is due and has hours logged.
 function mostRecentActiveMonth(months){
   for(var i=months.length-1;i>=0;i--){
-    if(months[i].totalHrs>0) return months[i];
+    if(months[i].totalHrs>0 && !isPendingMonth(months[i])) return months[i];
+  }
+  for(var j=months.length-1;j>=0;j--){
+    if(months[j].totalHrs>0) return months[j];
   }
   return months[0]||null;
 }
@@ -2828,7 +2839,8 @@ function renderYTDHome(props){
     // Submission compliance — count most recent month evidenceOk
     if(m && p.country!=='Virtual'){
       totalMonthsExpected++;
-      if(m.evidenceOk && m.evidenceOk.toUpperCase()==='Y') topSubmitted++;
+      var ev=(m.evidenceOk||'').toUpperCase();
+      if(ev==='Y'||ev==='YES') topSubmitted++;
     }
   });
 
@@ -2962,7 +2974,7 @@ function renderYTDHome(props){
         '<div>'+
           '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--mist);margin-bottom:2px;">Submission Compliance</div>'+
           '<div style="font-size:20px;font-weight:700;color:'+(compliancePct>=80?'#2F6B4F':compliancePct>=60?'#BD9A5E':'#B5562B')+';line-height:1;">'+compliancePct+'%</div>'+
-          '<div style="font-size:11px;color:var(--mist);">'+topSubmitted+' of '+totalMonthsExpected+' properties submitted this month</div>'+
+          '<div style="font-size:11px;color:var(--mist);">'+topSubmitted+' of '+totalMonthsExpected+' properties submitted (latest month due)</div>'+
         '</div>'+
         '<div style="width:48px;height:48px;border-radius:50%;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;">'+
           '<svg viewBox="0 0 48 48" width="48" height="48" style="position:absolute;top:-3px;left:-3px;">'+
